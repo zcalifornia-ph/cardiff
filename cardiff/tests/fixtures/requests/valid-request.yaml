@@ -1,0 +1,16 @@
+identity:
+  full_name: Ada Lovelace
+  role: Computing Pioneer
+  email: ada@example.com
+  organization: Analytical Engine Lab
+  address_lines:
+    - 123 Logic St.
+    - London
+template:
+  id: business-card
+  options:
+    variant: default
+    include_qr: true
+    accent_hex: "#0055AA"
+assets:
+  logo: brand/logo.png

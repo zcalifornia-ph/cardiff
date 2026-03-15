@@ -2,13 +2,17 @@
 
 Thanks for contributing to Cardiff.
 
-Cardiff is currently in the bootstrap stage, so contributions should stay tightly aligned with the project direction: a CLI and API for standardized, print-ready business cards and nameplates generated from structured data.
+Cardiff is now in an early pre-alpha implementation stage.
+The current completed slice is the canonical contract and validation foundation under `cardiff/src/cardiff/contract/`, so contributions should stay tightly aligned with the approved roadmap instead of jumping ahead with disconnected features.
 
 ## Before You Start
 
 - Check for an existing issue or discussion before starting work.
 - Open an issue first for significant product, architecture, or workflow changes.
 - Keep changes focused and easy to review.
+- Read `README.md` and `REQUIREMENTS.md` before starting implementation work.
+- If you change the request contract, update `cardiff/docs/validation-contract.md` and the relevant tests in `cardiff/tests/contract/`.
+- Do not include generated runtime artifacts such as `__pycache__/` directories or `.pyc` files in a contribution.
 - Make sure your work follows `CODE_OF_CONDUCT.md` and `SECURITY.md`.
 
 ## What Good Contributions Look Like
@@ -68,6 +72,7 @@ Each pull request should include:
 
 Prefer small pull requests over large mixed changes.
 If your work changes public behavior, update `README.md` and `CHANGELOG.md`.
+If your work changes the canonical contract or approved scope, update `REQUIREMENTS.md` as well.
 
 ## Review Standards
 
