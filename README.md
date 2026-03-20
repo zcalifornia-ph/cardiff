@@ -10,12 +10,12 @@
 
 <p align="center">
   Cardiff is an open-source rendering platform for standardized, print-ready business cards and adjacent identity materials.
-  It turns structured records into validated render requests that later CLI, batch, and API workflows can reuse without drift.
+  It turns structured records into validated render requests and reusable render outputs that later CLI, batch, and API workflows can share without drift.
 </p>
 
 <p align="center">
-  Version: <code>v0.0.2</code><br>
-  Status: pre-alpha; canonical contract and validation foundation landed.
+  Version: <code>v0.0.3</code><br>
+  Status: pre-alpha; canonical contract and render pipeline foundation landed.
 </p>
 
 ## Overview
@@ -31,33 +31,38 @@ The product direction remains the same: structured input should become consisten
 ## Current Implementation Slice
 
 The repository is no longer bootstrap-only.
-`UNIT-001 / BOLT-001A` is now implemented under the nested Python project in `cardiff/`.
+`UNIT-001 / BOLT-001A` and `UNIT-001 / BOLT-001B` are now implemented under the nested Python project in `cardiff/`.
 
 What is in place today:
 
 - a Python package scaffold with setuptools metadata in `cardiff/pyproject.toml`
 - a public package surface in `cardiff/src/cardiff/`
 - a framework-agnostic contract kernel in `cardiff/src/cardiff/contract/`
+- a shared render pipeline in `cardiff/src/cardiff/rendering/`
+- manifest-driven template resolution for the approved `business-card` template package in `cardiff/src/cardiff/templates/business-card/`
 - JSON and YAML request loading that normalizes into one canonical request model
-- validation rules for required identity fields, template selection, and supported template options
-- asset-path guardrails that constrain requests to approved roots and extensions
+- validation rules for required identity fields, template selection, supported template options, and approved asset paths
 - text sanitization hooks for later LaTeX-safe rendering
-- contract-focused tests and fixtures under `cardiff/tests/`
-- implementation documentation in `cardiff/docs/validation-contract.md`
+- deterministic local PDF generation plus a real `XeLaTeXAdapter` boundary for runtime parity work when `xelatex` is available
+- contract-focused and rendering-focused tests and fixtures under `cardiff/tests/`
+- implementation documentation in `cardiff/docs/validation-contract.md` and `cardiff/docs/render-pipeline.md`
+- stored approval artifacts in `cardiff/tests/fixtures/approved-samples/business-card/`
 
 ## What Cardiff Can Do Right Now
 
-The current codebase can validate and sanitize a single-record render request before any PDF rendering exists.
+The current codebase can validate a single-record render request and render the approved `business-card` template through the shared pipeline.
 
-Supported shape today:
+Supported behavior today:
 
-- top-level sections: `identity`, `template`, and optional `assets`
+- top-level request sections: `identity`, `template`, and optional `assets`
 - required identity fields: `full_name`, `role`, `email`
 - optional identity fields: `phone`, `organization`, `department`, `website`, `address_lines`, `pronouns`
-- template options: `variant`, `include_qr`, `accent_hex`
-- asset slots: `logo`, `avatar`
+- supported template options: `variant`, `include_qr`, `accent_hex`
+- approved asset slots: `logo`, `avatar`
+- template resolution through a manifest-backed symbolic template ID
+- stable renderer outcomes with normalized evidence for deterministic review
 
-Current validation outcomes include stable issue classes such as:
+Current validation and render failure classes include:
 
 - `unknown_field`
 - `missing_required`
@@ -65,35 +70,51 @@ Current validation outcomes include stable issue classes such as:
 - `invalid_template`
 - `invalid_asset_path`
 - `unsafe_content`
+- `template_not_found`
+- `template_manifest_invalid`
+- `template_asset_missing`
+- `unsupported_template_option`
+- `tex_compile_failed`
+- `render_output_invalid`
+
+## Current Rendering Boundary
+
+The current render layer supports two adapter paths:
+
+- `DeterministicTeXAdapter` for local deterministic output and test execution without `xelatex`
+- `XeLaTeXAdapter` for real compiler-backed PDF generation when `xelatex` is available on `PATH`
+
+This means the shared pipeline and template model are implemented now, while reference-runtime parity remains an explicit next step.
 
 ## What Has Not Landed Yet
 
-The current implementation is still an early foundation, not an end-to-end renderer.
+The current implementation is still a pre-alpha foundation, not the full product surface.
 
 Not yet implemented:
 
-- template resolution and PDF generation
 - CLI `validate` and `render` commands
 - CSV batch orchestration
 - FastAPI service mode
-- runtime pinning, CI wiring, and deployment packaging
+- richer template customization beyond the first approved business-card package
+- pinned reference runtime and container parity for `xelatex`
+- CI wiring, deployment packaging, and operations surfaces
 
 ## Target Architecture
 
 The approved direction remains:
 
 ```text
-structured input -> validated canonical request -> template resolution -> rendered LaTeX -> PDF compilation -> delivery via CLI, batch, or API
+structured input -> validated canonical request -> template resolution -> rendered TeX -> adapter compile -> PDF + normalized evidence -> delivery via CLI, batch, or API
 ```
 
 The current and planned stack includes:
 
 - Python 3.12+
 - PyYAML for YAML request loading
-- pytest for current contract validation tests
+- pytest for validation and render-pipeline tests
 - Typer for future CLI work
 - FastAPI for future service mode
-- Jinja2 and XeLaTeX for later render-pipeline work
+- manifest-backed template packages plus XeLaTeX-oriented rendering boundaries
 - Docker and CI runtime pinning for reproducible execution
 
 ## Repository Layout
@@ -105,20 +126,28 @@ cardiff/
     src/cardiff/
       __init__.py
       contract/
+      rendering/
+      templates/
+        business-card/
     tests/
       contract/
+      rendering/
       fixtures/
+        approved-assets/
+        approved-samples/
     docs/
       validation-contract.md
+      render-pipeline.md
     ai-dlc-docs/
       requirements/
       design-artifacts/
       traceability/
   repo/images/
   docs/
+    version-0-0-2-docs.md
+    version-0-0-3-docs.md
   README.md
   CHANGELOG.md
-  REQUIREMENTS.md
   CONTRIBUTING.md
   CODE_OF_CONDUCT.md
   SECURITY.md
@@ -127,7 +156,7 @@ cardiff/
 
 ## Getting Started
 
-The current runnable slice is the contract-validation layer.
+The current runnable slice is the shared contract and render foundation.
 
 1. Clone the repository.
 2. Enter the Python project directory:
@@ -142,18 +171,18 @@ The current runnable slice is the contract-validation layer.
    python -m pip install -e ".[dev]"
    ```
 
-4. Run the contract test suite:
+4. Run the current acceptance suite:
 
    ```powershell
-   python -m pytest tests/contract -q -p no:cacheprovider
+   python -m pytest tests -q -p no:cacheprovider
    ```
 
-Expected result: the contract tests pass and confirm JSON/YAML parity, required-field validation, unknown-field rejection, asset safety rules, and unsafe-content rejection.
+Expected result: the full current test suite passes and confirms contract validation, template resolution, classified render failures, and deterministic render evidence behavior.
 
 ## Roadmap
 
 - [x] `UNIT-001 / BOLT-001A`: canonical contract and validation foundation
-- [ ] `UNIT-001 / BOLT-001B`: render pipeline and template resolution
+- [x] `UNIT-001 / BOLT-001B`: render pipeline and template resolution
 - [ ] `UNIT-001 / BOLT-001C`: CLI operator flow
 - [ ] `UNIT-002`: template quality and controlled customization
 - [ ] `UNIT-003`: CSV batch generation
@@ -165,13 +194,14 @@ Expected result: the contract tests pass and confirm JSON/YAML parity, required-
 Start with these project artifacts:
 
 - `README.md` for the repo-level product and status summary
-- `REQUIREMENTS.md` for the current scope summary and source-of-truth links
-- `cardiff/docs/validation-contract.md` for the implemented request contract
-- `docs/version-0-0-2-docs.md` for the detailed notes on this version
+- `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md` for the implementation scope, bolt status, and traceability source of truth
+- `cardiff/docs/validation-contract.md` for the canonical request contract
+- `cardiff/docs/render-pipeline.md` for the implemented render pipeline and adapter behavior
+- `docs/version-0-0-3-docs.md` for the full release notes beyond this README and changelog
 
 ## Contributing
 
-Contributions are welcome, especially around contract hardening, template/render design, CLI ergonomics, documentation quality, and the next `UNIT-001` bolts.
+Contributions are welcome, especially around render quality, CLI ergonomics, batch and API reuse, runtime parity, and documentation quality.
 See `CONTRIBUTING.md` for workflow expectations.
 
 ## License

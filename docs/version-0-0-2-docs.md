@@ -83,7 +83,7 @@ This version also includes the supporting design and execution trail for `UNIT-0
 
 ### 6. Root Docs Realigned
 
-The root `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, and `REQUIREMENTS.md` now describe the actual pre-alpha implementation baseline instead of the older bootstrap-only state.
+The root `README.md`, `CHANGELOG.md`, and `CONTRIBUTING.md`, plus the AI-DLC requirements artifact at `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md`, now describe the actual pre-alpha implementation baseline instead of the older bootstrap-only state.
 
 ## Behavior Available Now
 
@@ -154,3 +154,4 @@ The next approved construction targets are:
 2. `BOLT-001C` for the CLI operator flow
 
 That is the path from this contract baseline to the first real end-to-end render.
+

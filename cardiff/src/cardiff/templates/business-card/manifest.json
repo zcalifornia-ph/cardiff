@@ -1,0 +1,22 @@
+{
+  "template_id": "business-card",
+  "manifest_version": 1,
+  "display_name": "Cardiff Business Card MVP",
+  "entrypoint": "card.tex",
+  "output_format": "pdf",
+  "page_width_in": 3.5,
+  "page_height_in": 2.0,
+  "supported_variants": [
+    "default"
+  ],
+  "required_asset_slots": [
+    "logo"
+  ],
+  "optional_asset_slots": [],
+  "required_identity_fields": [
+    "full_name",
+    "role",
+    "email"
+  ],
+  "sample_request": "tests/fixtures/requests/valid-request.yaml"
+}

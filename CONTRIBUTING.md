@@ -3,16 +3,17 @@
 Thanks for contributing to Cardiff.
 
 Cardiff is now in an early pre-alpha implementation stage.
-The current completed slice is the canonical contract and validation foundation under `cardiff/src/cardiff/contract/`, so contributions should stay tightly aligned with the approved roadmap instead of jumping ahead with disconnected features.
+The current completed slices are the canonical contract and render pipeline foundations under `cardiff/src/cardiff/contract/` and `cardiff/src/cardiff/rendering/`, so contributions should stay tightly aligned with the approved roadmap instead of jumping ahead with disconnected features.
 
 ## Before You Start
 
 - Check for an existing issue or discussion before starting work.
 - Open an issue first for significant product, architecture, or workflow changes.
 - Keep changes focused and easy to review.
-- Read `README.md` and `REQUIREMENTS.md` before starting implementation work.
+- Read `README.md` and `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md` before starting implementation work.
 - If you change the request contract, update `cardiff/docs/validation-contract.md` and the relevant tests in `cardiff/tests/contract/`.
-- Do not include generated runtime artifacts such as `__pycache__/` directories or `.pyc` files in a contribution.
+- If you change template resolution or rendering behavior, update `cardiff/docs/render-pipeline.md` and the relevant tests in `cardiff/tests/rendering/`.
+- Do not include generated runtime artifacts such as `__pycache__/` directories, `.pyc` files, or `cardiff/src/cardiff.egg-info/` in a contribution.
 - Make sure your work follows `CODE_OF_CONDUCT.md` and `SECURITY.md`.
 
 ## What Good Contributions Look Like
@@ -21,7 +22,7 @@ Strong contributions usually:
 
 - solve a clearly described problem
 - include documentation updates when behavior or scope changes
-- include validation evidence such as tests, screenshots, logs, or reproducible steps
+- include validation evidence such as tests, screenshots, logs, PDFs, or reproducible steps
 - explain tradeoffs when introducing new dependencies, interfaces, or architecture
 - avoid promising features that are not implemented yet
 
@@ -37,7 +38,7 @@ Strong contributions usually:
 Example branch name:
 
 ```text
-feat/add-csv-batch-parser
+feat/add-cli-render-command
 ```
 
 ## Commit Messages
@@ -47,9 +48,9 @@ Use Conventional Commits.
 Examples:
 
 ```text
-feat: add initial CSV batch parsing contract
-fix: prevent invalid logo path handling
-docs: clarify planned API service scope
+feat: add manifest-driven render pipeline
+fix: prevent missing logo assets from reaching the render adapter
+docs: clarify deterministic render evidence expectations
 ```
 
 Common types:
@@ -72,7 +73,7 @@ Each pull request should include:
 
 Prefer small pull requests over large mixed changes.
 If your work changes public behavior, update `README.md` and `CHANGELOG.md`.
-If your work changes the canonical contract or approved scope, update `REQUIREMENTS.md` as well.
+If your work changes the canonical contract or approved scope, update `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md` as well.
 
 ## Review Standards
 
