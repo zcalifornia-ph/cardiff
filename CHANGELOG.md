@@ -2,6 +2,21 @@
 
 Status: pre-alpha; `UNIT-001` is complete and the first CLI operator flow is now implemented.
 
+## v0.1.1
+
+### Added or Changed
+- Refreshed `README.md` so its public structure aligns more closely with `agent/reference/sample-readme.md` while preserving the existing Cardiff-specific product, roadmap, and contact content.
+- Added root README badges, action links, a table of contents, `Built With` badges, back-to-top anchors, and contributor-facing footer sections.
+- Updated the current public documentation line from `v0.1.0` to `v0.1.1` in `README.md`, `REQUIREMENTS.md`, and `cardiff/pyproject.toml` for version coherence.
+- Added `docs/version-0-1-1-docs.md` with the full documentation-release notes for this README refresh.
+
+### For Deletion
+- `cardiff/__pycache__/` generated Python bytecode cache directory.
+- `cardiff/src/cardiff.egg-info/` editable-install metadata directory.
+- `cardiff/src/cardiff/**/__pycache__/` generated package bytecode cache directories.
+- `cardiff/tests/**/__pycache__/` generated test bytecode cache directories.
+- `cardiff/**/*.pyc` generated Python bytecode files currently present in the source and test trees.
+
 ## v0.1.0
 
 ### Added or Changed
