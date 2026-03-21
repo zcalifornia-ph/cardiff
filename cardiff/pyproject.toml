@@ -26,3 +26,6 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.scripts]
+cardiff = "cardiff.cli:main"

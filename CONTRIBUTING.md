@@ -13,6 +13,7 @@ The current completed slices are the canonical contract and render pipeline foun
 - Read `README.md` and `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md` before starting implementation work.
 - If you change the request contract, update `cardiff/docs/validation-contract.md` and the relevant tests in `cardiff/tests/contract/`.
 - If you change template resolution or rendering behavior, update `cardiff/docs/render-pipeline.md` and the relevant tests in `cardiff/tests/rendering/`.
+- If you change CLI behavior, entrypoint wiring, status payloads, or exit-code semantics, update `cardiff/docs/cli-quickstart.md` and the relevant tests in `cardiff/tests/cli/`.
 - Do not include generated runtime artifacts such as `__pycache__/` directories, `.pyc` files, or `cardiff/src/cardiff.egg-info/` in a contribution.
 - Make sure your work follows `CODE_OF_CONDUCT.md` and `SECURITY.md`.
 
@@ -23,6 +24,7 @@ Strong contributions usually:
 - solve a clearly described problem
 - include documentation updates when behavior or scope changes
 - include validation evidence such as tests, screenshots, logs, PDFs, or reproducible steps
+- avoid adding new CLI or framework dependencies when the existing contract or rendering kernels can be reused directly
 - explain tradeoffs when introducing new dependencies, interfaces, or architecture
 - avoid promising features that are not implemented yet
 
