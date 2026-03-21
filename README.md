@@ -1,24 +1,82 @@
-# cardiff
+<a id="readme-top"></a>
 
-<p align="center">
-  <img src="repo/images/project_screen.png" alt="Cardiff project screenshot" width="900">
-</p>
+<div align="center">
 
-<p align="center">
-  <strong>Business cards as code.</strong>
-</p>
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![Apache License][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
 
-<p align="center">
-  Cardiff is an open-source rendering platform for standardized, print-ready business cards and adjacent identity materials.
-  It turns structured records into validated render requests and reusable render outputs that later CLI, batch, and API workflows can share without drift.
-</p>
+</div>
 
-<p align="center">
-  Version: <code>v0.1.0</code><br>
-  Status: pre-alpha; <code>UNIT-001</code> is complete and the first CLI operator flow is now implemented.
-</p>
+<div align="center">
+  <a href="https://github.com/zcalifornia-ph/cardiff">
+    <img src="repo/images/project_screen.png" alt="Cardiff project screenshot" width="900">
+  </a>
 
-## Overview
+  <h3 align="center">CARDIFF</h3>
+
+  <p align="center">
+    <strong>Business cards as code.</strong>
+  </p>
+
+  <p align="center">
+    Cardiff is an open-source rendering platform for standardized, print-ready business cards and adjacent identity materials.
+    It turns structured records into validated render requests and reusable render outputs that later CLI, batch, and API workflows can share without drift.
+  </p>
+
+  <p align="center">
+    Version: <code>v0.1.1</code><br>
+    Status: pre-alpha; <code>UNIT-001</code> is complete and the first CLI operator flow is now implemented.
+    <br />
+    <a href="REQUIREMENTS.md"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="cardiff/docs/cli-quickstart.md">View CLI Quickstart</a>
+    &middot;
+    <a href="https://github.com/zcalifornia-ph/cardiff/issues/new?labels=bug">Report Bug</a>
+    &middot;
+    <a href="https://github.com/zcalifornia-ph/cardiff/issues/new?labels=enhancement">Request Feature</a>
+  </p>
+</div>
+
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li><a href="#current-implementation-slice">Current Implementation Slice</a></li>
+    <li><a href="#what-cardiff-can-do-right-now">What Cardiff Can Do Right Now</a></li>
+    <li><a href="#current-command-surface">Current Command Surface</a></li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#quick-start">Quick Start</a></li>
+      </ul>
+    </li>
+    <li><a href="#repository-layout">Repository Layout</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#documentation">Documentation</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## About The Project
+
+### Overview
 
 Cardiff is building toward one shared rendering core for:
 
@@ -27,6 +85,15 @@ Cardiff is building toward one shared rendering core for:
 - API integrations that need the same validation and rendering behavior as the CLI
 
 The product direction remains the same: structured input should become consistent, branded, print-ready outputs without manual layout editing for every person.
+
+### Built With
+
+* [![Python][Python]][Python-url]
+* [![XeLaTeX][XeLaTeX]][XeLaTeX-url]
+* [![PyYAML][PyYAML]][PyYAML-url]
+* [![pytest][pytest-badge]][pytest-url]
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Current Implementation Slice
 
@@ -46,6 +113,8 @@ What is in place today:
 - implementation documentation in `cardiff/docs/validation-contract.md`, `cardiff/docs/render-pipeline.md`, and `cardiff/docs/cli-quickstart.md`
 - stored approval artifacts in `cardiff/tests/fixtures/approved-samples/business-card/`
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## What Cardiff Can Do Right Now
 
 The current codebase can validate a single-record render request and render the approved `business-card` template end to end through the shared CLI and rendering core.
@@ -59,6 +128,8 @@ Supported behavior today:
 - surface stable validation and render failure classes
 - run deterministic local renders and compare normalized evidence against the approved reference record
 - expose runtime metadata that later portability, batch, and API work can reuse
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Current Command Surface
 
@@ -78,7 +149,17 @@ Current commands:
 - `validate`
 - `render`
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## Getting Started
+
+### Prerequisites
+
+- Python `3.12+`
+- `pip`
+- Optional: `xelatex` on `PATH` if you want runtime parity with the real compiler instead of deterministic fallback mode
+
+### Quick Start
 
 1. Clone the repository.
 2. Enter the Python project directory:
@@ -113,6 +194,8 @@ Current commands:
 
 Expected result: the current test suite passes and confirms CLI behavior, contract validation, template resolution, classified render failures, and deterministic render evidence behavior.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## Repository Layout
 
 ```text
@@ -144,6 +227,7 @@ cardiff/
     version-0-0-3-docs.md
     version-0-0-4-docs.md
     version-0-1-0-docs.md
+    version-0-1-1-docs.md
   learn/
     unit-001-bolt-001a-study-guide.md
   README.md
@@ -155,6 +239,8 @@ cardiff/
   LICENSE.txt
 ```
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## Roadmap
 
 - [x] `UNIT-001 / BOLT-001A`: canonical contract and validation foundation
@@ -164,6 +250,10 @@ cardiff/
 - [ ] `UNIT-003`: CSV batch generation
 - [ ] `UNIT-004`: FastAPI service mode
 - [ ] `UNIT-005`: runtime packaging, CI, deployment, and ops readiness
+
+See the [open issues](https://github.com/zcalifornia-ph/cardiff/issues) for proposed features and known gaps.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Documentation
 
@@ -175,24 +265,77 @@ Start with these project artifacts:
 - `cardiff/docs/render-pipeline.md` for the shared render pipeline and adapter behavior
 - `cardiff/docs/cli-quickstart.md` for the current CLI workflow and exit-code contract
 - `learn/unit-001-bolt-001a-study-guide.md` for the guided walkthrough of the contract foundation
-- `docs/version-0-1-0-docs.md` for the full milestone notes beyond this README and changelog
+- `docs/version-0-1-1-docs.md` for the current documentation-release notes beyond this README and changelog
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Contributing
 
 Contributions are welcome, especially around render quality, CLI ergonomics, batch and API reuse, runtime parity, and documentation quality.
 See `CONTRIBUTING.md` for workflow expectations.
 
+1. Fork the repository.
+2. Create a short-lived branch from `main`.
+3. Make the smallest cohesive change that solves the problem.
+4. Update docs and tests when applicable.
+5. Open a pull request with clear context and verification details.
+
+### Top Contributors
+
+<a href="https://github.com/zcalifornia-ph/cardiff/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=zcalifornia-ph/cardiff" alt="contrib.rocks image" />
+</a>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## License
 
 Distributed under the Apache License 2.0.
 See `LICENSE.txt` for the full license text.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## Contact
 
-Maintainer: Zildjian E. California  
-Email: zecalifornia@up.edu.ph  
-GitHub: https://github.com/zcalifornia-ph/cardiff  
-LinkedIn: https://www.linkedin.com/in/zcalifornia  
-ORCID: https://orcid.org/0009-0002-2357-7606  
-ResearchGate: https://www.researchgate.net/profile/Zildjian-California  
-X/Twitter: https://twitter.com/zcalifornia_
+Maintainer: [@zcalifornia_](https://twitter.com/zcalifornia_) - zecalifornia@up.edu.ph
+
+Project Link: [https://github.com/zcalifornia-ph/cardiff](https://github.com/zcalifornia-ph/cardiff)
+
+LinkedIn: [https://www.linkedin.com/in/zcalifornia](https://www.linkedin.com/in/zcalifornia)
+
+ORCID: [https://orcid.org/0009-0002-2357-7606](https://orcid.org/0009-0002-2357-7606)
+
+ResearchGate: [https://www.researchgate.net/profile/Zildjian-California](https://www.researchgate.net/profile/Zildjian-California)
+
+X/Twitter: [https://twitter.com/zcalifornia_](https://twitter.com/zcalifornia_)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Acknowledgments
+
+* The Python ecosystem packages used in this repository, especially `setuptools`, `PyYAML`, and `pytest`.
+* The XeLaTeX toolchain that Cardiff targets for runtime parity when real compiler execution is available.
+* The broader template-driven document tooling ecosystem that informs Cardiff's contract-first rendering approach.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[contributors-shield]: https://img.shields.io/github/contributors/zcalifornia-ph/cardiff.svg?style=for-the-badge
+[contributors-url]: https://github.com/zcalifornia-ph/cardiff/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/zcalifornia-ph/cardiff.svg?style=for-the-badge
+[forks-url]: https://github.com/zcalifornia-ph/cardiff/network/members
+[stars-shield]: https://img.shields.io/github/stars/zcalifornia-ph/cardiff.svg?style=for-the-badge
+[stars-url]: https://github.com/zcalifornia-ph/cardiff/stargazers
+[issues-shield]: https://img.shields.io/github/issues/zcalifornia-ph/cardiff.svg?style=for-the-badge
+[issues-url]: https://github.com/zcalifornia-ph/cardiff/issues
+[license-shield]: https://img.shields.io/github/license/zcalifornia-ph/cardiff.svg?style=for-the-badge
+[license-url]: https://github.com/zcalifornia-ph/cardiff/blob/main/LICENSE.txt
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/zcalifornia
+[Python]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
+[Python-url]: https://www.python.org/
+[XeLaTeX]: https://img.shields.io/badge/XeLaTeX-008080?style=for-the-badge&logo=latex&logoColor=white
+[XeLaTeX-url]: https://www.latex-project.org/
+[PyYAML]: https://img.shields.io/badge/PyYAML-CB171E?style=for-the-badge
+[PyYAML-url]: https://pyyaml.org/
+[pytest-badge]: https://img.shields.io/badge/pytest-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white
+[pytest-url]: https://pytest.org/
