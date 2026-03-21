@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  Version: <code>v0.0.4</code><br>
+  Version: <code>v0.1.0</code><br>
   Status: pre-alpha; <code>UNIT-001</code> is complete and the first CLI operator flow is now implemented.
 </p>
 
@@ -30,7 +30,7 @@ The product direction remains the same: structured input should become consisten
 
 ## Current Implementation Slice
 
-The repository now contains a complete `UNIT-001` baseline under the nested Python project in `cardiff/`.
+The repository now contains a complete `UNIT-001` baseline under the nested Python project in `cardiff/`, plus a public requirements snapshot at `REQUIREMENTS.md`.
 
 What is in place today:
 
@@ -139,15 +139,15 @@ cardiff/
       cli-quickstart.md
       render-pipeline.md
       validation-contract.md
-    ai-dlc-docs/
-      requirements/
-      design-artifacts/
-      traceability/
   docs/
     version-0-0-2-docs.md
     version-0-0-3-docs.md
     version-0-0-4-docs.md
+    version-0-1-0-docs.md
+  learn/
+    unit-001-bolt-001a-study-guide.md
   README.md
+  REQUIREMENTS.md
   CHANGELOG.md
   CONTRIBUTING.md
   CODE_OF_CONDUCT.md
@@ -170,11 +170,12 @@ cardiff/
 Start with these project artifacts:
 
 - `README.md` for the repo-level product and status summary
-- `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md` for the implementation scope, bolt status, and traceability source of truth
+- `REQUIREMENTS.md` for the public implementation scope, current unit status, and acceptance baseline
 - `cardiff/docs/validation-contract.md` for the canonical request contract
 - `cardiff/docs/render-pipeline.md` for the shared render pipeline and adapter behavior
 - `cardiff/docs/cli-quickstart.md` for the current CLI workflow and exit-code contract
-- `docs/version-0-0-4-docs.md` for the full release notes beyond this README and changelog
+- `learn/unit-001-bolt-001a-study-guide.md` for the guided walkthrough of the contract foundation
+- `docs/version-0-1-0-docs.md` for the full milestone notes beyond this README and changelog
 
 ## Contributing
 

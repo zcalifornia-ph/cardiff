@@ -125,14 +125,11 @@ Think of it as a compiler front end:
 - `cardiff/tests/fixtures/requests/valid-request.yaml`
 - `cardiff/tests/fixtures/approved-assets/README.md`
 
-### Docs and AI-DLC Artifacts
+### Docs and Review Artifacts
 
 - `cardiff/docs/validation-contract.md`
-- `cardiff/ai-dlc-docs/design-artifacts/UNIT-001/domain-design.md`
-- `cardiff/ai-dlc-docs/design-artifacts/UNIT-001/logical-design.md`
-- `cardiff/ai-dlc-docs/design-artifacts/UNIT-001/adr/bolt-001a-adr.md`
-- `cardiff/ai-dlc-docs/traceability/UNIT-001/bolt-001a-traceability.md`
-- `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md`
+- `REQUIREMENTS.md`
+- supplemental design, ADR, and traceability notes captured during `UNIT-001 / BOLT-001A` review
 
 ### Verification
 
@@ -415,16 +412,16 @@ This is the part many learners miss:
 - tests are not only proofs,
 - they are executable summaries of the intended system behavior.
 
-## 10) The AI-DLC Artifacts Still Matter After the Code Lands
+## 10) The Supplemental Design Artifacts Still Matter After the Code Lands
 
 Do not ignore the docs just because implementation now exists.
 
-The AI-DLC artifacts still serve different purposes:
+The supporting design artifacts still serve different purposes:
 
-- `domain-design.md` explains the concepts and invariants,
-- `logical-design.md` explains module boundaries and flow,
-- `bolt-001a-adr.md` explains why this path was chosen,
-- `bolt-001a-traceability.md` links the bolt to tests, risks, and downstream checks,
+- the domain-design notes explain the concepts and invariants,
+- the logical-design notes explain module boundaries and flow,
+- the `BOLT-001A` ADR explains why this path was chosen,
+- the traceability notes link the bolt to tests, risks, and downstream checks,
 - `REQUIREMENTS.md` records the bolt as complete with evidence.
 
 This is how you keep implementation, design, and lifecycle evidence synchronized.

@@ -38,10 +38,7 @@ Plan B: start with the tests in `cardiff/tests/contract/`, then read the validat
 - `cardiff/tests/fixtures/requests/valid-request.yaml`
 - `cardiff/tests/fixtures/approved-assets/README.md`
 - `cardiff/docs/validation-contract.md`
-- `cardiff/ai-dlc-docs/design-artifacts/UNIT-001/domain-design.md`
-- `cardiff/ai-dlc-docs/design-artifacts/UNIT-001/logical-design.md`
-- `cardiff/ai-dlc-docs/design-artifacts/UNIT-001/adr/bolt-001a-adr.md`
-- `cardiff/ai-dlc-docs/traceability/UNIT-001/bolt-001a-traceability.md`
+- `REQUIREMENTS.md`
 
 ## What Changed In This Version
 
@@ -83,7 +80,7 @@ This version also includes the supporting design and execution trail for `UNIT-0
 
 ### 6. Root Docs Realigned
 
-The root `README.md`, `CHANGELOG.md`, and `CONTRIBUTING.md`, plus the AI-DLC requirements artifact at `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md`, now describe the actual pre-alpha implementation baseline instead of the older bootstrap-only state.
+The root `README.md`, `CHANGELOG.md`, and `CONTRIBUTING.md` now describe the actual pre-alpha implementation baseline instead of the older bootstrap-only state.
 
 ## Behavior Available Now
 
@@ -133,13 +130,7 @@ This version does not yet deliver:
 - FastAPI service mode
 - deployment packaging and CI wiring
 
-The current workspace also contains generated Python cache artifacts that should be removed before a clean commit:
-
-- `cardiff/src/cardiff/__pycache__/`
-- `cardiff/src/cardiff/contract/__pycache__/`
-- `cardiff/tests/__pycache__/`
-- `cardiff/tests/contract/__pycache__/`
-- `cardiff/**/*.pyc`
+Local Python cache files generated during development should still stay out of commits.
 
 ## Practice Task
 

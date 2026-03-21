@@ -37,11 +37,7 @@ Plan B: start with the rendering tests in `cardiff/tests/rendering/`, then inspe
 - `cardiff/tests/fixtures/approved-samples/business-card/reference-evidence.json`
 - `cardiff/tests/fixtures/approved-samples/business-card/determinism-output.pdf`
 - `cardiff/docs/render-pipeline.md`
-- `cardiff/ai-dlc-docs/design-artifacts/UNIT-001/domain-design.md`
-- `cardiff/ai-dlc-docs/design-artifacts/UNIT-001/logical-design.md`
-- `cardiff/ai-dlc-docs/design-artifacts/UNIT-001/adr/bolt-001b-adr.md`
-- `cardiff/ai-dlc-docs/traceability/UNIT-001/bolt-001b-traceability.md`
-- `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md`
+- `REQUIREMENTS.md`
 
 ## What Changed In This Version
 
@@ -93,7 +89,7 @@ The version also stores review artifacts under `cardiff/tests/fixtures/approved-
 ### 6. Root Docs Realigned Again
 
 The root `README.md` now reflects that the render pipeline has landed.
-`CONTRIBUTING.md` now points contributors at the actual requirements source of truth under `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md` instead of the missing root-level path that earlier docs implied.
+The public contribution docs now point readers at public requirements and implementation docs instead of ignored internal workflow paths.
 
 ## Behavior Available Now
 
@@ -138,11 +134,7 @@ This version still does not deliver:
 - pinned reference-runtime parity with a real `xelatex` environment
 - CI wiring, deployment packaging, and ops instrumentation surfaces
 
-The current workspace also still contains generated runtime artifacts that should be removed before a clean commit:
-
-- `cardiff/src/cardiff.egg-info/`
-- `cardiff/**/__pycache__/`
-- `cardiff/**/*.pyc`
+Local Python cache files or editable-install metadata generated during development should still stay out of commits.
 
 ## Practice Task
 

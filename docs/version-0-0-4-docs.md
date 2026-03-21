@@ -18,7 +18,7 @@ A user can now validate a request, render the approved business-card PDF, inspec
 
 Plan A: read `README.md`, then `cardiff/docs/cli-quickstart.md`, then inspect `cardiff/src/cardiff/cli.py` and `cardiff/tests/cli/test_cli.py`.
 
-Plan B: start with `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md`, then read `cardiff/ai-dlc-docs/traceability/UNIT-001/bolt-001c-traceability.md`, then run the CLI commands listed in the verification section.
+Plan B: start with `REQUIREMENTS.md`, then inspect `cardiff/tests/cli/test_cli.py`, then run the CLI commands listed in the verification section.
 
 ## Artifact Map
 
@@ -30,11 +30,7 @@ Plan B: start with `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md`, then read
 - `cardiff/tests/fixtures/requests/invalid-request-missing-email.yaml`
 - `cardiff/tests/fixtures/approved-samples/business-card/reference-evidence.json`
 - `cardiff/docs/cli-quickstart.md`
-- `cardiff/ai-dlc-docs/design-artifacts/UNIT-001/domain-design.md`
-- `cardiff/ai-dlc-docs/design-artifacts/UNIT-001/logical-design.md`
-- `cardiff/ai-dlc-docs/design-artifacts/UNIT-001/adr/bolt-001c-adr.md`
-- `cardiff/ai-dlc-docs/traceability/UNIT-001/bolt-001c-traceability.md`
-- `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md`
+- `REQUIREMENTS.md`
 - `README.md`
 - `CHANGELOG.md`
 - `CONTRIBUTING.md`
@@ -86,7 +82,7 @@ The CLI reproducibility flow now compares against the current approved evidence 
 ### 5. Root Docs Were Realigned To The New Capability Baseline
 
 The root `README.md` is now updated to `v0.0.4` and describes the actual shipped CLI surface rather than the earlier render-foundation-only state.
-The root `CONTRIBUTING.md` now tells contributors to keep `cardiff/docs/cli-quickstart.md` and `cardiff/tests/cli/` aligned when they change CLI behavior.
+The public docs also keep contributors on public documentation paths instead of exposing ignored internal workflow files.
 
 ## Behavior Available Now
 
@@ -128,11 +124,7 @@ This version still does not deliver:
 - pinned reference-runtime parity with a real `xelatex` environment
 - CI wiring, deployment packaging, and ops instrumentation surfaces
 
-The current workspace also still contains generated runtime artifacts that should be removed before a clean commit:
-
-- `cardiff/src/cardiff.egg-info/`
-- `cardiff/**/__pycache__/`
-- `cardiff/**/*.pyc`
+Local Python cache files or editable-install metadata generated during development should still stay out of commits.
 
 ## Practice Task
 

@@ -3,18 +3,18 @@
 Thanks for contributing to Cardiff.
 
 Cardiff is now in an early pre-alpha implementation stage.
-The current completed slices are the canonical contract and render pipeline foundations under `cardiff/src/cardiff/contract/` and `cardiff/src/cardiff/rendering/`, so contributions should stay tightly aligned with the approved roadmap instead of jumping ahead with disconnected features.
+`UNIT-001` is complete and the first CLI operator flow is in place, so contributions should stay tightly aligned with the approved roadmap instead of jumping ahead with disconnected features.
 
 ## Before You Start
 
 - Check for an existing issue or discussion before starting work.
 - Open an issue first for significant product, architecture, or workflow changes.
 - Keep changes focused and easy to review.
-- Read `README.md` and `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md` before starting implementation work.
+- Read `README.md`, `REQUIREMENTS.md`, and the relevant docs under `cardiff/docs/` before starting implementation work.
 - If you change the request contract, update `cardiff/docs/validation-contract.md` and the relevant tests in `cardiff/tests/contract/`.
 - If you change template resolution or rendering behavior, update `cardiff/docs/render-pipeline.md` and the relevant tests in `cardiff/tests/rendering/`.
 - If you change CLI behavior, entrypoint wiring, status payloads, or exit-code semantics, update `cardiff/docs/cli-quickstart.md` and the relevant tests in `cardiff/tests/cli/`.
-- Do not include generated runtime artifacts such as `__pycache__/` directories, `.pyc` files, or `cardiff/src/cardiff.egg-info/` in a contribution.
+- Do not include generated Python cache files, bytecode, or editable-install metadata in a contribution.
 - Make sure your work follows `CODE_OF_CONDUCT.md` and `SECURITY.md`.
 
 ## What Good Contributions Look Like
@@ -75,7 +75,7 @@ Each pull request should include:
 
 Prefer small pull requests over large mixed changes.
 If your work changes public behavior, update `README.md` and `CHANGELOG.md`.
-If your work changes the canonical contract or approved scope, update `cardiff/ai-dlc-docs/requirements/REQUIREMENTS.md` as well.
+If your work changes the canonical contract or approved scope, update `REQUIREMENTS.md` and the affected public docs as well.
 
 ## Review Standards
 
