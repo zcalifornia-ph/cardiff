@@ -9,88 +9,145 @@
 </p>
 
 <p align="center">
-  Cardiff is an open-source CLI and API for standardized, print-ready business cards and nameplates.
-  It turns structured data into polished PDFs for individuals, teams, labs, departments, and institutional systems.
+  Cardiff is an open-source rendering platform for standardized, print-ready business cards and adjacent identity materials.
+  It turns structured records into validated render requests and reusable render outputs that later CLI, batch, and API workflows can share without drift.
 </p>
 
 <p align="center">
-  Version: <code>v0.0.1</code><br>
-  Status: bootstrap and planning stage; implementation has not landed yet.
+  Version: <code>v0.1.0</code><br>
+  Status: pre-alpha; <code>UNIT-001</code> is complete and the first CLI operator flow is now implemented.
 </p>
 
 ## Overview
 
-Cardiff is being designed as a reproducible identity-material generation platform.
-Instead of manually editing layouts in a design tool for every person, Cardiff aims to accept structured input such as config files, CSV exports, or API payloads and render consistent, branded, print-ready outputs.
+Cardiff is building toward one shared rendering core for:
 
-The project has two intended operating modes:
+- individual CLI operators who want one-command PDF generation from structured data
+- batch workflows for departments, labs, and administrative teams
+- API integrations that need the same validation and rendering behavior as the CLI
 
-- A CLI for individuals and technical users who want one-command PDF generation from structured data.
-- An API service for departments, labs, offices, and admin systems that need standardized business cards or nameplates generated from institutional records.
+The product direction remains the same: structured input should become consistent, branded, print-ready outputs without manual layout editing for every person.
 
-## Why Cardiff
+## Current Implementation Slice
 
-Most business card and nameplate workflows are manual, inconsistent, and hard to scale.
-Cardiff is intended to improve that by making output:
+The repository now contains a complete `UNIT-001` baseline under the nested Python project in `cardiff/`, plus a public requirements snapshot at `REQUIREMENTS.md`.
 
-- Beautiful by default, with print-ready typography and layout discipline.
-- Reproducible, so designs and inputs can be versioned and regenerated.
-- Automatable, so CSV and API-driven batch generation become possible.
-- Standardized, so organizations can enforce approved layouts and branding.
-- Flexible, so controlled personalization can happen without editing raw LaTeX.
+What is in place today:
 
-## Current Repository State
+- a Python package scaffold with setuptools metadata in `cardiff/pyproject.toml`
+- a public package surface in `cardiff/src/cardiff/`
+- a framework-agnostic contract kernel in `cardiff/src/cardiff/contract/`
+- a shared render pipeline in `cardiff/src/cardiff/rendering/`
+- manifest-driven template resolution for the approved `business-card` template package in `cardiff/src/cardiff/templates/business-card/`
+- a first CLI adapter in `cardiff/src/cardiff/cli.py` with `validate` and `render` commands
+- installed-package and source-checkout entry paths through `cardiff/src/cardiff/__main__.py` and `cardiff/cardiff.py`
+- deterministic local PDF generation plus a real `XeLaTeXAdapter` boundary for runtime parity work when `xelatex` is available
+- CLI, contract, and rendering tests and fixtures under `cardiff/tests/`
+- implementation documentation in `cardiff/docs/validation-contract.md`, `cardiff/docs/render-pipeline.md`, and `cardiff/docs/cli-quickstart.md`
+- stored approval artifacts in `cardiff/tests/fixtures/approved-samples/business-card/`
 
-This repository is at the initialization stage.
-Right now, it contains the public project docs, the initial governance files, an empty package directory, and the screenshot asset for the planned product.
+## What Cardiff Can Do Right Now
 
-There is no released CLI, API service, or template engine in the repository yet.
-If you are evaluating the project today, treat this repo as a product and documentation scaffold for the implementation work that follows.
+The current codebase can validate a single-record render request and render the approved `business-card` template end to end through the shared CLI and rendering core.
 
-## Planned Capabilities
+Supported behavior today:
 
-The project direction defined for this repository includes:
+- load JSON and YAML request files into one canonical request model
+- validate required identity fields, supported template options, and approved asset paths before rendering
+- render the approved `business-card` template to a requested PDF path
+- emit structured JSON status payloads for `validate` and `render` commands
+- surface stable validation and render failure classes
+- run deterministic local renders and compare normalized evidence against the approved reference record
+- expose runtime metadata that later portability, batch, and API work can reuse
 
-- Single-card generation from a small config file.
-- CSV-based batch generation for teams and institutions.
-- FastAPI endpoints for integration with admin portals and database-backed systems.
-- Template-driven rendering for business cards, nameplates, and related identity materials.
-- Controlled customization for names, roles, emails, logos, colors, QR codes, and vCards.
-- Deterministic PDF output suitable for print workflows.
+## Current Command Surface
 
-## Target Architecture
-
-Cardiff is planned around a simple pipeline:
+The current operator flow is:
 
 ```text
-structured input -> validated models -> rendered LaTeX -> PDF compilation -> delivery via CLI or API
+structured request file -> canonical validation -> approved template resolution -> TeX adapter compile -> PDF artifact + structured status + normalized evidence
 ```
 
-The intended stack currently includes:
+CLI entry paths available now:
 
-- Python 3.12+
-- Typer for the CLI
-- FastAPI for service mode
-- Pydantic for validation
-- Jinja2 for template rendering
-- XeLaTeX for PDF generation
-- PyYAML and CSV input support
-- pytest, ruff, and mypy for quality gates
-- Docker and GitHub Actions for reproducible environments
+- `python -m cardiff ...` from the `cardiff/` project root
+- `cardiff ...` after editable or standard installation
 
-These choices describe the current direction, not already-landed implementation.
+Current commands:
+
+- `validate`
+- `render`
+
+## Getting Started
+
+1. Clone the repository.
+2. Enter the Python project directory:
+
+   ```powershell
+   cd cardiff
+   ```
+
+3. Install the package and test dependencies:
+
+   ```powershell
+   python -m pip install -e ".[dev]"
+   ```
+
+4. Validate the approved sample request:
+
+   ```powershell
+   python -m cardiff validate tests/fixtures/requests/valid-request.yaml --approved-asset-root tests/fixtures/approved-assets
+   ```
+
+5. Render the approved sample PDF with deterministic evidence comparison:
+
+   ```powershell
+   python -m cardiff render tests/fixtures/requests/valid-request.yaml --approved-asset-root tests/fixtures/approved-assets --output tests/fixtures/approved-samples/business-card/determinism-output.pdf --deterministic --reference-evidence tests/fixtures/approved-samples/business-card/reference-evidence.json
+   ```
+
+6. Run the current acceptance suite:
+
+   ```powershell
+   python -m pytest tests -q -p no:cacheprovider
+   ```
+
+Expected result: the current test suite passes and confirms CLI behavior, contract validation, template resolution, classified render failures, and deterministic render evidence behavior.
 
 ## Repository Layout
 
-The current repository shape is intentionally small:
-
 ```text
 cardiff/
-  cardiff/            # package directory placeholder
-  docs/               # public documentation space
-  learn/              # learning artifacts
-  repo/images/        # public project images
+  cardiff/
+    cardiff.py
+    pyproject.toml
+    src/cardiff/
+      __init__.py
+      __main__.py
+      cli.py
+      contract/
+      rendering/
+      templates/
+        business-card/
+    tests/
+      cli/
+      contract/
+      rendering/
+      fixtures/
+        approved-assets/
+        approved-samples/
+    docs/
+      cli-quickstart.md
+      render-pipeline.md
+      validation-contract.md
+  docs/
+    version-0-0-2-docs.md
+    version-0-0-3-docs.md
+    version-0-0-4-docs.md
+    version-0-1-0-docs.md
+  learn/
+    unit-001-bolt-001a-study-guide.md
   README.md
+  REQUIREMENTS.md
   CHANGELOG.md
   CONTRIBUTING.md
   CODE_OF_CONDUCT.md
@@ -98,29 +155,32 @@ cardiff/
   LICENSE.txt
 ```
 
-## Getting Started
-
-There is no installable release yet.
-
-If you want to follow or contribute to the project now:
-
-1. Clone the repository.
-2. Read this README for product scope and direction.
-3. Review `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `SECURITY.md`.
-4. Open an issue before starting large implementation or architecture changes.
-
 ## Roadmap
 
-- [ ] Phase 1: CLI MVP for single-card generation from structured config
-- [ ] Phase 2: improved templates, QR support, logos, and better validation
-- [ ] Phase 3: CSV batch generation for teams and institutional use
-- [ ] Phase 4: FastAPI service mode for system integration
-- [ ] Phase 5: reproducible packaging, CI, and deployment guidance
+- [x] `UNIT-001 / BOLT-001A`: canonical contract and validation foundation
+- [x] `UNIT-001 / BOLT-001B`: render pipeline and template resolution
+- [x] `UNIT-001 / BOLT-001C`: CLI operator flow
+- [ ] `UNIT-002`: template quality and controlled customization
+- [ ] `UNIT-003`: CSV batch generation
+- [ ] `UNIT-004`: FastAPI service mode
+- [ ] `UNIT-005`: runtime packaging, CI, deployment, and ops readiness
+
+## Documentation
+
+Start with these project artifacts:
+
+- `README.md` for the repo-level product and status summary
+- `REQUIREMENTS.md` for the public implementation scope, current unit status, and acceptance baseline
+- `cardiff/docs/validation-contract.md` for the canonical request contract
+- `cardiff/docs/render-pipeline.md` for the shared render pipeline and adapter behavior
+- `cardiff/docs/cli-quickstart.md` for the current CLI workflow and exit-code contract
+- `learn/unit-001-bolt-001a-study-guide.md` for the guided walkthrough of the contract foundation
+- `docs/version-0-1-0-docs.md` for the full milestone notes beyond this README and changelog
 
 ## Contributing
 
-Contributions are welcome, especially around product design, template strategy, rendering architecture, CLI/API ergonomics, documentation, and future implementation work.
-See `CONTRIBUTING.md` for the contribution workflow.
+Contributions are welcome, especially around render quality, CLI ergonomics, batch and API reuse, runtime parity, and documentation quality.
+See `CONTRIBUTING.md` for workflow expectations.
 
 ## License
 

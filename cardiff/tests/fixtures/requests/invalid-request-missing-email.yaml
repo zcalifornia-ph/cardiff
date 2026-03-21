@@ -1,0 +1,11 @@
+identity:
+  full_name: Ada Lovelace
+  role: Computing Pioneer
+template:
+  id: business-card
+  options:
+    variant: default
+    include_qr: true
+    accent_hex: "#0055AA"
+assets:
+  logo: brand/logo.png

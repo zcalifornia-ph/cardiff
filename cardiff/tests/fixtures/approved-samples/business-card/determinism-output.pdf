@@ -1,0 +1,48 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 1 /Kids [3 0 R] >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 252.00 144.00] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 459 >>
+stream
+BT
+/F1 9 Tf
+1 0 0 1 12 126.00 Tm (Name: Ada Lovelace) Tj
+1 0 0 1 12 116.00 Tm (Role: Computing Pioneer) Tj
+1 0 0 1 12 106.00 Tm (Org: Analytical Engine Lab) Tj
+1 0 0 1 12 96.00 Tm (Email: ada@example.com) Tj
+1 0 0 1 12 86.00 Tm (Address: 123 Logic St.) Tj
+1 0 0 1 12 76.00 Tm (Address: London) Tj
+1 0 0 1 12 66.00 Tm (Variant: default) Tj
+1 0 0 1 12 56.00 Tm (Accent: #0055AA) Tj
+1 0 0 1 12 46.00 Tm (QR: enabled) Tj
+1 0 0 1 12 36.00 Tm (Logo: logo.png) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Title (Cardiff Business Card MVP) /Producer (Cardiff deterministic adapter) >>
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000247 00000 n 
+0000000317 00000 n 
+0000000827 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R /Info 6 0 R >>
+startxref
+925
+%%EOF

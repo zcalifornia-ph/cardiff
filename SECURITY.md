@@ -3,11 +3,11 @@
 ## Supported Versions
 
 Cardiff is in an early pre-release state.
-Only the latest `0.0.x` work and the most recent project state are considered supported for security fixes.
+Only the latest `0.1.x` work and the most recent project state are considered supported for security fixes.
 
 | Version | Supported |
 | --- | --- |
-| 0.0.x | Yes |
+| 0.1.x | Yes |
 | Older drafts | No |
 
 ## Reporting a Vulnerability
