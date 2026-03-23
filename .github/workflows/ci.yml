@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main, rev]
+  pull_request:
+    branches: [rev]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        working-directory: cardiff
+        run: pip install -e ".[dev]"
+
+      - name: Clean temporary QR work directories
+        working-directory: cardiff
+        run: |
+          find tests/fixtures/approved-samples/business-card -mindepth 1 -maxdepth 1 -type d \
+            ! -name '__pycache__' \
+            -name 'qr-*' -exec rm -rf {} + 2>/dev/null || true
+
+      - name: Run contract tests
+        working-directory: cardiff
+        run: python -m pytest tests/contract -q -p no:cacheprovider
+
+      - name: Run rendering tests
+        working-directory: cardiff
+        run: python -m pytest tests/rendering -q -p no:cacheprovider
+
+      - name: Run CLI tests
+        working-directory: cardiff
+        run: python -m pytest tests/cli -q -p no:cacheprovider
