@@ -286,6 +286,25 @@ def test_validate_command_returns_structured_issues_for_invalid_request():
     assert 'Validation rejected' in stderr
 
 
+def test_validate_command_rejects_relative_assets_without_approved_roots():
+    exit_code, payload, stderr = _run_cli(
+        [
+            'validate',
+            VALID_REQUEST.as_posix(),
+        ]
+    )
+
+    assert exit_code == 1
+    assert payload['command'] == 'validate'
+    assert payload['status'] == 'rejected'
+    assert payload['template_id'] == 'business-card'
+    assert payload['exit_code'] == 1
+    assert payload['issue_count'] == 1
+    assert payload['issues'][0]['code'] == 'invalid_asset_path'
+    assert payload['issues'][0]['field'] == 'assets.logo'
+    assert 'Validation rejected' in stderr
+
+
 def test_render_command_writes_the_requested_pdf_and_reports_runtime_metadata():
     exit_code, payload, stderr = _run_cli(
         [
@@ -350,6 +369,30 @@ def test_render_command_stops_when_validation_fails():
     assert payload['command'] == 'render'
     assert payload['status'] == 'rejected'
     assert payload['failure_stage'] == 'validation'
+    assert not INVALID_OUTPUT_PATH.exists()
+    assert 'failed validation' in stderr
+
+
+def test_render_command_rejects_relative_assets_without_approved_roots():
+    assert not INVALID_OUTPUT_PATH.exists()
+
+    exit_code, payload, stderr = _run_cli(
+        [
+            'render',
+            VALID_REQUEST.as_posix(),
+            '--output',
+            INVALID_OUTPUT_PATH.as_posix(),
+            '--deterministic',
+        ]
+    )
+
+    assert exit_code == 1
+    assert payload['command'] == 'render'
+    assert payload['status'] == 'rejected'
+    assert payload['failure_stage'] == 'validation'
+    assert payload['issue_count'] == 1
+    assert payload['issues'][0]['code'] == 'invalid_asset_path'
+    assert payload['issues'][0]['field'] == 'assets.logo'
     assert not INVALID_OUTPUT_PATH.exists()
     assert 'failed validation' in stderr
 
