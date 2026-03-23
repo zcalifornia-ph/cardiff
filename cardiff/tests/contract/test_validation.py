@@ -310,3 +310,27 @@ template:
         "template.options.accent_hex",
         "template.options.include_qr",
     ]
+
+
+def test_relative_asset_paths_are_rejected_without_approved_roots():
+    payload = """
+identity:
+  full_name: "Ada Lovelace"
+  role: "Engineer"
+  email: "ada@example.com"
+template:
+  id: business-card
+assets:
+  logo: "brand/logo.png"
+"""
+
+    result = load_and_validate_request(
+        payload,
+        source_name="invalid.yaml",
+    )
+
+    assert result.outcome == ValidationOutcome.REJECTED
+    assert result.request is None
+    assert len(result.issues) == 1
+    assert result.issues[0].code == ValidationCode.INVALID_ASSET_PATH
+    assert result.issues[0].field == "assets.logo"
