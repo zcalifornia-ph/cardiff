@@ -1,6 +1,6 @@
 # Requirements
 
-Status: pre-alpha public requirements snapshot for `v0.1.5`.
+Status: pre-alpha public requirements snapshot for `v0.1.6`.
 
 ## Objective
 
@@ -18,6 +18,8 @@ The current public MVP includes:
 - structured JSON status output and optional reference-evidence comparison
 - normalized manifest/request evidence that stays stable across checkout path and line-ending differences
 - fail-fast rejection of unknown template placeholders before PDF generation starts
+- initial GitHub Actions validation for pushes and pull requests plus tag-gated release verification before distribution publishing
+- package metadata aligned to the `cardiff-cli` distribution while preserving the `cardiff` console command
 
 ## Acceptance Baseline
 
@@ -27,6 +29,7 @@ The current public MVP includes:
 - Deterministic runs can compare normalized evidence against the approved reference record.
 - Reference-evidence comparison remains stable across equivalent checkout paths and line-ending differences.
 - Templates with unknown placeholders fail before PDF generation with a stable render failure class.
+- Tagged releases validate package-version metadata and rerun the targeted suites before building distributions or publishing.
 
 ## Recorded Verification
 
@@ -49,7 +52,10 @@ Expected result:
 - `cardiff/docs/render-pipeline.md`
 - `cardiff/docs/cli-quickstart.md`
 - `cardiff/docs/template-authoring.md`
-- `docs/version-0-1-5-docs.md`
+- `.github/workflows/ci.yml`
+- `.github/workflows/release.yml`
+- `cardiff/pyproject.toml`
+- `docs/version-0-1-6-docs.md`
 - `learn/unit-001-bolt-001a-study-guide.md`
 
 ## Next Units
@@ -57,6 +63,6 @@ Expected result:
 - `UNIT-002`: template quality and controlled customization
 - `UNIT-003`: CSV batch generation
 - `UNIT-004`: FastAPI service mode
-- `UNIT-005`: runtime packaging, CI, deployment, and ops readiness
+- `UNIT-005`: runtime packaging, broader CI, deployment, and ops readiness
 
 This public snapshot intentionally keeps hidden planning and traceability files out of the root documentation surface.

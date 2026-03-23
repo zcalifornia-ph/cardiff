@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, rev]
   pull_request:
-    branches: [rev]
+    branches: [main, rev]
 
 permissions:
   contents: read
@@ -30,12 +30,18 @@ jobs:
         working-directory: cardiff
         run: pip install -e ".[dev]"
 
-      - name: Clean temporary QR work directories
+      - name: Clean transient test work directories
         working-directory: cardiff
         run: |
+          rm -rf \
+            tests/fixtures/approved-samples/business-card/.cardiff-qr \
+            tests/fixtures/approved-samples/business-card/_directive-work
           find tests/fixtures/approved-samples/business-card -mindepth 1 -maxdepth 1 -type d \
-            ! -name '__pycache__' \
-            -name 'qr-*' -exec rm -rf {} + 2>/dev/null || true
+            -name 'cardiff-qr-*' -exec rm -rf {} +
+          find tests/fixtures -mindepth 1 -maxdepth 1 -type d \
+            -name 'tmp*' -exec rm -rf {} +
+          find . -mindepth 1 -maxdepth 1 -type d \
+            \( -name 'pytest-cache-files-*' -o -name 'tmp*' \) -exec rm -rf {} +
 
       - name: Run contract tests
         working-directory: cardiff

@@ -28,8 +28,8 @@
   </p>
 
   <p align="center">
-    Version: <code>v0.1.5</code><br>
-    Status: pre-alpha; <code>UNIT-001</code> is complete and the checked-in repo now includes QR-directive rendering support, explicit Unicode-safe local rendering guidance, stable normalized-evidence comparison, and fail-fast rejection of unknown template placeholders before PDF generation.
+    Version: <code>v0.1.6</code> public release line<br>
+    Status: pre-alpha; <code>UNIT-001</code> is complete and the current repo head now includes QR-directive rendering support, explicit Unicode-safe local rendering guidance, stable normalized-evidence comparison, fail-fast rejection of unknown template placeholders before PDF generation, and initial GitHub Actions validation/release workflows.
     <br />
     <a href="REQUIREMENTS.md"><strong>Explore the docs »</strong></a>
     <br />
@@ -102,7 +102,7 @@ The repository now contains a complete `UNIT-001` baseline under the nested Pyth
 
 What is in place today:
 
-- a Python package scaffold with setuptools metadata in `cardiff/pyproject.toml`
+- a Python package scaffold with setuptools metadata in `cardiff/pyproject.toml` for the `cardiff-cli` distribution
 - a public package surface in `cardiff/src/cardiff/`
 - a framework-agnostic contract kernel in `cardiff/src/cardiff/contract/`
 - a shared render pipeline in `cardiff/src/cardiff/rendering/`, including QR/vCard directive preprocessing in `directives.py`
@@ -111,6 +111,7 @@ What is in place today:
 - installed-package and source-checkout entry paths through `cardiff/src/cardiff/__main__.py` and `cardiff/cardiff.py`
 - deterministic local PDF generation for stable ASCII-only smoke checks plus a real `XeLaTeXAdapter` boundary for Unicode-safe runtime parity when `xelatex` is available
 - CLI, contract, and rendering tests and fixtures under `cardiff/tests/`, including directive-focused coverage in `cardiff/tests/rendering/test_directives.py`
+- GitHub Actions workflows under `.github/workflows/` for targeted validation on pushes and pull requests plus tag-gated release verification and distribution builds
 - implementation documentation in `cardiff/docs/validation-contract.md`, `cardiff/docs/render-pipeline.md`, and `cardiff/docs/cli-quickstart.md`
 - contributor-facing template guidance in `cardiff/docs/template-authoring.md`
 - stored approval artifacts in `cardiff/tests/fixtures/approved-samples/business-card/`
@@ -191,6 +192,8 @@ Current commands:
    python -m pip install -e ".[dev]"
    ```
 
+   This creates the local `cardiff` console command. The package metadata currently uses the distribution name `cardiff-cli`.
+
 5. Validate the approved sample request:
 
    ```powershell
@@ -219,6 +222,8 @@ Expected current result:
 - 25 rendering tests pass
 - 14 CLI tests pass
 
+These are also the targeted suites enforced by the current GitHub Actions CI and release workflows.
+
 Optional reference-comparison check:
 
 ```powershell
@@ -239,6 +244,10 @@ Current repo note: broad collection with `python -m pytest tests -q -p no:cachep
 
 ```text
 cardiff/
+  .github/
+    workflows/
+      ci.yml
+      release.yml
   cardiff/
     cardiff.py
     pyproject.toml
@@ -274,6 +283,7 @@ cardiff/
     version-0-1-3-docs.md
     version-0-1-4-docs.md
     version-0-1-5-docs.md
+    version-0-1-6-docs.md
   learn/
     unit-001-bolt-001a-study-guide.md
   README.md
@@ -295,7 +305,9 @@ cardiff/
 - [ ] `UNIT-002`: template quality and controlled customization
 - [ ] `UNIT-003`: CSV batch generation
 - [ ] `UNIT-004`: FastAPI service mode
-- [ ] `UNIT-005`: runtime packaging, CI, deployment, and ops readiness
+- [ ] `UNIT-005`: runtime packaging, broader CI, deployment, and ops readiness
+
+Initial GitHub Actions validation and release workflows are already in-tree, but the broader `UNIT-005` runtime packaging, deployment, and operational-readiness scope remains open.
 
 See the [open issues](https://github.com/zcalifornia-ph/cardiff/issues) for proposed features and known gaps.
 
@@ -312,8 +324,10 @@ Start with these project artifacts:
 - `cardiff/docs/render-pipeline.md` for the shared render pipeline and adapter behavior
 - `cardiff/docs/cli-quickstart.md` for the current CLI workflow and exit-code contract
 - `cardiff/docs/template-authoring.md` for the approved business-card template package rules and contributor-facing template expectations
+- `.github/workflows/ci.yml` for the current targeted validation matrix on pushes and pull requests
+- `.github/workflows/release.yml` for the current tag-gated release verification and publish flow
 - `learn/unit-001-bolt-001a-study-guide.md` for the guided walkthrough of the contract foundation
-- `docs/version-0-1-5-docs.md` for the latest checked-in versioned documentation-release notes beyond this README and changelog
+- `docs/version-0-1-6-docs.md` for the latest checked-in versioned documentation-release notes beyond this README and changelog
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -323,10 +337,10 @@ Contributions are welcome, especially around render quality, CLI ergonomics, bat
 See `CONTRIBUTING.md` for workflow expectations.
 
 1. Fork the repository.
-2. Create a short-lived branch from `rev`.
+2. Create a short-lived branch from the integration branch you intend to target (`main` or `rev`).
 3. Make the smallest cohesive change that solves the problem.
 4. Update docs and tests when applicable.
-5. Open a pull request targeting `rev` with clear context and verification details.
+5. Open a pull request targeting that same integration branch with clear context and verification details.
 6. Delete the short-lived branch after merge.
 
 ### Top Contributors
