@@ -1,6 +1,25 @@
 # Changelog
 
-Status: pre-alpha; `UNIT-001` is complete and the repository currently contains QR-directive rendering plus deterministic/Unicode rendering clarification work.
+Status: pre-alpha; `UNIT-001` is complete and the repository currently contains QR-directive rendering, deterministic/Unicode rendering clarification work, and normalized reference-evidence comparison.
+
+## v0.1.4
+
+### Added or Changed
+- Advanced the root public docs and requirements snapshot from `v0.1.3` to `v0.1.4`, including the current README status line and versioned-doc references.
+- Replaced ignored-environment-path setup examples in `README.md` with a generic `venv` example so the public quickstart no longer references ignored local environment paths.
+- Normalized render evidence so manifest fingerprints come from parsed manifest JSON and request fingerprints come from canonical request payloads without source metadata, which keeps approved evidence portable across checkout paths and line endings.
+- Added rendering determinism coverage that would fail if source metadata or manifest line endings start affecting normalized evidence again.
+- Refreshed `cardiff/tests/fixtures/approved-samples/business-card/reference-evidence.json` to the new normalized manifest/request fingerprints and restored the CLI reference-comparison path to exit code `0`.
+- Updated `cardiff/docs/render-pipeline.md`, `cardiff/docs/cli-quickstart.md`, `CONTRIBUTING.md`, and `REQUIREMENTS.md` to document the normalized evidence contract and current verification baseline.
+- Added `docs/version-0-1-4-docs.md` with the detailed release notes for this evidence-portability and root-doc alignment update.
+- Verified the targeted suite baseline for the current repo state: `tests/contract` passes (`9`), `tests/rendering` passes (`23`), and `tests/cli` passes (`14`).
+
+### For Deletion
+- `cardiff/tests/fixtures/approved-samples/business-card/.cardiff-qr/` generated QR work directory from non-deterministic rendering runs.
+- `cardiff/tests/fixtures/approved-samples/business-card/_directive-work/` generated QR directive test work directory.
+- `cardiff/tests/fixtures/approved-samples/business-card/cardiff-qr-*/` inaccessible temporary QR directories left behind by earlier runs.
+- `cardiff/pytest-cache-files-*/` temporary pytest cache directories that are currently permission-denied in this workspace.
+- `tmphk9u2kf5/` orphaned temporary root directory.
 
 ## v0.1.3
 

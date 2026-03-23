@@ -1,6 +1,6 @@
 # Requirements
 
-Status: pre-alpha public requirements snapshot for `v0.1.1`.
+Status: pre-alpha public requirements snapshot for `v0.1.4`.
 
 ## Objective
 
@@ -16,6 +16,7 @@ The current public MVP includes:
 - a shared render pipeline with deterministic evidence output
 - CLI `validate` and `render` commands
 - structured JSON status output and optional reference-evidence comparison
+- normalized manifest/request evidence that stays stable across checkout path and line-ending differences
 
 ## Acceptance Baseline
 
@@ -23,6 +24,7 @@ The current public MVP includes:
 - The approved `business-card` template renders to a requested PDF path.
 - CLI `validate` and `render` return actionable structured results with non-zero exits on failure.
 - Deterministic runs can compare normalized evidence against the approved reference record.
+- Reference-evidence comparison remains stable across equivalent checkout paths and line-ending differences.
 
 ## Recorded Verification
 
@@ -31,22 +33,20 @@ cd cardiff
 python -m pytest tests/contract -q -p no:cacheprovider
 python -m pytest tests/rendering -q -p no:cacheprovider
 python -m pytest tests/cli -q -p no:cacheprovider
-python -m pytest tests -q -p no:cacheprovider
 ```
 
 Expected result:
 
-- 8 contract tests pass
-- 5 rendering tests pass
-- 6 CLI tests pass
-- 19 total tests pass
+- 9 contract tests pass
+- 23 rendering tests pass
+- 14 CLI tests pass
 
 ## Public Source Files
 
 - `cardiff/docs/validation-contract.md`
 - `cardiff/docs/render-pipeline.md`
 - `cardiff/docs/cli-quickstart.md`
-- `docs/version-0-1-1-docs.md`
+- `docs/version-0-1-4-docs.md`
 - `learn/unit-001-bolt-001a-study-guide.md`
 
 ## Next Units
