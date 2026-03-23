@@ -181,7 +181,7 @@ def _build_placeholder_values(
 
 def _render_template_source(template_source: str, values: dict[str, str]) -> str:
     unknown = sorted(
-        {match.group(1) for match in PLACEHOLDER_PATTERN.finditer(template_source)}
+        {m.group(1) for m in PLACEHOLDER_PATTERN.finditer(template_source)}
         - values.keys()
     )
     if unknown:

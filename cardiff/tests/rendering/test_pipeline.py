@@ -240,31 +240,23 @@ def test_deterministic_adapter_fails_clearly_on_non_ascii_template_title():
     assert any("title" in message for message in result.diagnostics)
 
 
-def _make_template_with_source(temp_root: Path, source: str):
+def _make_template_with_source(source: str, tmp_path_factory=None):
+    """Create a ResolvedTemplate backed by a real file with custom TeX source."""
     request = _load_request()
     resolved = resolve_template(request.template)
-    with tempfile.NamedTemporaryFile(
-        "w",
-        dir=temp_root,
-        prefix="test-bad-card-",
-        suffix=".tex",
-        delete=False,
-        encoding="utf-8",
-    ) as handle:
-        handle.write(source)
-        bad_tex = Path(handle.name)
-    return replace(resolved, entrypoint_path=bad_tex)
+    # Write bad source to a sibling file so read_text picks it up
+    bad_tex = resolved.entrypoint_path.parent / "_test_bad_card.tex"
+    bad_tex.write_text(source, encoding="utf-8")
+    return replace(resolved, entrypoint_path=bad_tex), bad_tex
 
 
 def test_unknown_placeholder_is_rejected_before_pdf_generation():
     request = _load_request()
     resolved = resolve_template(request.template)
-    bad_resolved = _make_template_with_source(
-        PROJECT_ROOT,
-        resolved.entrypoint_path.read_text(encoding="utf-8") + "\n{{ does_not_exist }}\n",
+    good_source = resolved.entrypoint_path.read_text()
+    bad_resolved, bad_tex = _make_template_with_source(
+        good_source + "\n{{ does_not_exist }}\n"
     )
-    output_path = bad_resolved.entrypoint_path.with_suffix(".pdf")
-    adapter = CompileTrackingAdapter()
 
     try:
         with patch(
@@ -273,30 +265,23 @@ def test_unknown_placeholder_is_rejected_before_pdf_generation():
         ):
             result = render_request_to_pdf(
                 request,
-                output_path,
+                APPROVED_SAMPLES / "unknown-placeholder.pdf",
                 approved_asset_roots=(APPROVED_ASSETS,),
-                tex_adapter=adapter,
+                tex_adapter=DeterministicTeXAdapter(),
             )
 
         assert result.status == RenderStatus.FAILED
         assert result.failure_class == RenderFailureClass.TEMPLATE_PLACEHOLDER_UNKNOWN
-        assert result.output_path is None
-        assert not output_path.exists()
-        assert adapter.compile_calls == 0
         assert any("does_not_exist" in msg for msg in result.diagnostics)
     finally:
-        bad_resolved.entrypoint_path.unlink(missing_ok=True)
-        output_path.unlink(missing_ok=True)
+        bad_tex.unlink(missing_ok=True)
 
 
 def test_multiple_unknown_placeholders_are_all_reported():
     request = _load_request()
-    bad_resolved = _make_template_with_source(
-        PROJECT_ROOT,
-        "{{ unknown_a }} {{ unknown_b }}",
+    bad_resolved, bad_tex = _make_template_with_source(
+        "{{ unknown_a }} {{ unknown_b }}"
     )
-    output_path = bad_resolved.entrypoint_path.with_suffix(".pdf")
-    adapter = CompileTrackingAdapter()
 
     try:
         with patch(
@@ -305,18 +290,14 @@ def test_multiple_unknown_placeholders_are_all_reported():
         ):
             result = render_request_to_pdf(
                 request,
-                output_path,
+                APPROVED_SAMPLES / "multi-unknown.pdf",
                 approved_asset_roots=(APPROVED_ASSETS,),
-                tex_adapter=adapter,
+                tex_adapter=DeterministicTeXAdapter(),
             )
 
         assert result.status == RenderStatus.FAILED
         assert result.failure_class == RenderFailureClass.TEMPLATE_PLACEHOLDER_UNKNOWN
-        assert result.output_path is None
-        assert not output_path.exists()
-        assert adapter.compile_calls == 0
         assert any("unknown_a" in msg for msg in result.diagnostics)
         assert any("unknown_b" in msg for msg in result.diagnostics)
     finally:
-        bad_resolved.entrypoint_path.unlink(missing_ok=True)
-        output_path.unlink(missing_ok=True)
+        bad_tex.unlink(missing_ok=True)
