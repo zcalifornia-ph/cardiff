@@ -307,10 +307,11 @@ Contributions are welcome, especially around render quality, CLI ergonomics, bat
 See `CONTRIBUTING.md` for workflow expectations.
 
 1. Fork the repository.
-2. Create a short-lived branch from `main`.
+2. Create a short-lived branch from `rev`.
 3. Make the smallest cohesive change that solves the problem.
 4. Update docs and tests when applicable.
-5. Open a pull request with clear context and verification details.
+5. Open a pull request targeting `rev` with clear context and verification details.
+6. Delete the short-lived branch after merge.
 
 ### Top Contributors
 
