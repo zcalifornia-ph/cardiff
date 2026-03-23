@@ -1,11 +1,27 @@
 # Changelog
 
-Status: pre-alpha; `UNIT-001` is complete and the first CLI operator flow is now implemented.
+Status: pre-alpha; `UNIT-001` is complete and the repository currently contains additional post-`v0.1.1` QR-directive and documentation-reconciliation work.
+
+## Unreleased
+
+### Added or Changed
+- Reconciled the root public docs with the current repo state, including the checked-in QR directive/rendering additions and the latest verification caveats.
+- Updated `README.md` so it now documents `segno`-backed QR preprocessing, the expanded rendering test surface, and a Windows-friendly virtual-environment activation flow.
+- Updated `CONTRIBUTING.md` so contributors refresh directive coverage and reference evidence when template, approved-request, or deterministic-output behavior changes.
+- Recorded the current verification reality of the checked-in tree: `tests/contract` passes (`8` tests), `tests/rendering` passes (`16` tests), and `tests/cli` currently has one failing reference-comparison test because `cardiff/tests/fixtures/approved-samples/business-card/reference-evidence.json` is stale relative to the current manifest and request fingerprints.
+- Documented that broad `python -m pytest tests -q -p no:cacheprovider` collection can fail until temporary QR work directories under `cardiff/tests/fixtures/approved-samples/business-card/` are cleaned.
+
+### For Deletion
+- `cardiff/tests/fixtures/approved-samples/business-card/.cardiff-qr/` generated QR work directory from non-deterministic rendering runs.
+- `cardiff/tests/fixtures/approved-samples/business-card/_directive-work/` generated QR directive test work directory.
+- `cardiff/tests/fixtures/approved-samples/business-card/cardiff-qr-*/` inaccessible temporary QR directories left behind by earlier runs.
+- `cardiff/pytest-cache-files-*/` temporary pytest cache directories that are currently permission-denied in this workspace.
+- `tmphk9u2kf5/` orphaned temporary root directory.
 
 ## v0.1.1
 
 ### Added or Changed
-- Refreshed `README.md` so its public structure aligns more closely with `agent/reference/sample-readme.md` while preserving the existing Cardiff-specific product, roadmap, and contact content.
+- Refreshed `README.md` so its public structure aligns more closely with the repository's standard project-doc layout while preserving the existing Cardiff-specific product, roadmap, and contact content.
 - Added root README badges, action links, a table of contents, `Built With` badges, back-to-top anchors, and contributor-facing footer sections.
 - Updated the current public documentation line from `v0.1.0` to `v0.1.1` in `README.md`, `REQUIREMENTS.md`, and `cardiff/pyproject.toml` for version coherence.
 - Added `docs/version-0-1-1-docs.md` with the full documentation-release notes for this README refresh.

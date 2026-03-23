@@ -29,7 +29,7 @@
 
   <p align="center">
     Version: <code>v0.1.1</code><br>
-    Status: pre-alpha; <code>UNIT-001</code> is complete and the first CLI operator flow is now implemented.
+    Status: pre-alpha; <code>UNIT-001</code> is complete and the checked-in repo now includes QR-directive rendering support plus expanded rendering coverage.
     <br />
     <a href="REQUIREMENTS.md"><strong>Explore the docs »</strong></a>
     <br />
@@ -91,6 +91,7 @@ The product direction remains the same: structured input should become consisten
 * [![Python][Python]][Python-url]
 * [![XeLaTeX][XeLaTeX]][XeLaTeX-url]
 * [![PyYAML][PyYAML]][PyYAML-url]
+* [![segno][segno-badge]][segno-url]
 * [![pytest][pytest-badge]][pytest-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -104,12 +105,12 @@ What is in place today:
 - a Python package scaffold with setuptools metadata in `cardiff/pyproject.toml`
 - a public package surface in `cardiff/src/cardiff/`
 - a framework-agnostic contract kernel in `cardiff/src/cardiff/contract/`
-- a shared render pipeline in `cardiff/src/cardiff/rendering/`
+- a shared render pipeline in `cardiff/src/cardiff/rendering/`, including QR/vCard directive preprocessing in `directives.py`
 - manifest-driven template resolution for the approved `business-card` template package in `cardiff/src/cardiff/templates/business-card/`
 - a first CLI adapter in `cardiff/src/cardiff/cli.py` with `validate` and `render` commands
 - installed-package and source-checkout entry paths through `cardiff/src/cardiff/__main__.py` and `cardiff/cardiff.py`
 - deterministic local PDF generation plus a real `XeLaTeXAdapter` boundary for runtime parity work when `xelatex` is available
-- CLI, contract, and rendering tests and fixtures under `cardiff/tests/`
+- CLI, contract, and rendering tests and fixtures under `cardiff/tests/`, including directive-focused coverage in `cardiff/tests/rendering/test_directives.py`
 - implementation documentation in `cardiff/docs/validation-contract.md`, `cardiff/docs/render-pipeline.md`, and `cardiff/docs/cli-quickstart.md`
 - stored approval artifacts in `cardiff/tests/fixtures/approved-samples/business-card/`
 
@@ -124,6 +125,7 @@ Supported behavior today:
 - load JSON and YAML request files into one canonical request model
 - validate required identity fields, supported template options, and approved asset paths before rendering
 - render the approved `business-card` template to a requested PDF path
+- preprocess the template's `\cardiffqr[...]` directive into a generated QR PNG or deterministic placeholder, depending on adapter mode
 - emit structured JSON status payloads for `validate` and `render` commands
 - surface stable validation and render failure classes
 - run deterministic local renders and compare normalized evidence against the approved reference record
@@ -136,7 +138,7 @@ Supported behavior today:
 The current operator flow is:
 
 ```text
-structured request file -> canonical validation -> approved template resolution -> TeX adapter compile -> PDF artifact + structured status + normalized evidence
+structured request file -> canonical validation -> approved template resolution -> placeholder fill + optional QR directive preprocessing -> TeX adapter compile -> PDF artifact + structured status + normalized evidence
 ```
 
 CLI entry paths available now:
@@ -168,31 +170,58 @@ Current commands:
    cd cardiff
    ```
 
-3. Install the package and test dependencies:
+3. Create and activate a virtual environment:
+
+   ```powershell
+   python -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+   ```
+
+   If you are using `bash` or `zsh` instead of PowerShell:
+
+   ```bash
+   source .venv/bin/activate
+   ```
+
+4. Install the package and test dependencies:
 
    ```powershell
    python -m pip install -e ".[dev]"
    ```
 
-4. Validate the approved sample request:
+5. Validate the approved sample request:
 
    ```powershell
    python -m cardiff validate tests/fixtures/requests/valid-request.yaml --approved-asset-root tests/fixtures/approved-assets
    ```
 
-5. Render the approved sample PDF with deterministic evidence comparison:
+6. Render the approved sample PDF with the deterministic adapter:
 
    ```powershell
-   python -m cardiff render tests/fixtures/requests/valid-request.yaml --approved-asset-root tests/fixtures/approved-assets --output tests/fixtures/approved-samples/business-card/determinism-output.pdf --deterministic --reference-evidence tests/fixtures/approved-samples/business-card/reference-evidence.json
+   python -m cardiff render tests/fixtures/requests/valid-request.yaml --approved-asset-root tests/fixtures/approved-assets --output tests/fixtures/approved-samples/business-card/determinism-output.pdf --deterministic
    ```
 
-6. Run the current acceptance suite:
+7. Run the currently stable targeted suites:
 
    ```powershell
-   python -m pytest tests -q -p no:cacheprovider
+   python -m pytest tests/contract -q -p no:cacheprovider
+   python -m pytest tests/rendering -q -p no:cacheprovider
+   python -m pytest tests/cli -q -p no:cacheprovider
    ```
 
-Expected result: the current test suite passes and confirms CLI behavior, contract validation, template resolution, classified render failures, and deterministic render evidence behavior.
+Expected current result:
+
+- 8 contract tests pass
+- 16 rendering tests pass
+- 5 of 6 CLI tests pass; the stored `reference-evidence.json` currently needs refresh, so the reference-comparison path is expected to return exit code `4`
+
+Optional reference-comparison check:
+
+```powershell
+python -m cardiff render tests/fixtures/requests/valid-request.yaml --approved-asset-root tests/fixtures/approved-assets --output tests/fixtures/approved-samples/business-card/determinism-output.pdf --deterministic --reference-evidence tests/fixtures/approved-samples/business-card/reference-evidence.json
+```
+
+Current repo note: broad collection with `python -m pytest tests -q -p no:cacheprovider` can also fail until temporary QR work directories under `cardiff/tests/fixtures/approved-samples/business-card/` are cleaned.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -209,12 +238,14 @@ cardiff/
       cli.py
       contract/
       rendering/
+        directives.py
       templates/
         business-card/
     tests/
       cli/
       contract/
       rendering/
+        test_directives.py
       fixtures/
         approved-assets/
         approved-samples/
@@ -260,6 +291,7 @@ See the [open issues](https://github.com/zcalifornia-ph/cardiff/issues) for prop
 Start with these project artifacts:
 
 - `README.md` for the repo-level product and status summary
+- `CHANGELOG.md` for the latest repo-state notes, cleanup candidates, and unreleased documentation reconciliation
 - `REQUIREMENTS.md` for the public implementation scope, current unit status, and acceptance baseline
 - `cardiff/docs/validation-contract.md` for the canonical request contract
 - `cardiff/docs/render-pipeline.md` for the shared render pipeline and adapter behavior
@@ -275,11 +307,10 @@ Contributions are welcome, especially around render quality, CLI ergonomics, bat
 See `CONTRIBUTING.md` for workflow expectations.
 
 1. Fork the repository.
-2. Create a short-lived branch from `rev`.
+2. Create a short-lived branch from `main`.
 3. Make the smallest cohesive change that solves the problem.
 4. Update docs and tests when applicable.
-5. Open a pull request targeting `rev` with clear context and verification details.
-6. Delete the short-lived branch after merge.
+5. Open a pull request with clear context and verification details.
 
 ### Top Contributors
 
@@ -338,5 +369,7 @@ X/Twitter: [https://twitter.com/zcalifornia_](https://twitter.com/zcalifornia_)
 [XeLaTeX-url]: https://www.latex-project.org/
 [PyYAML]: https://img.shields.io/badge/PyYAML-CB171E?style=for-the-badge
 [PyYAML-url]: https://pyyaml.org/
+[segno-badge]: https://img.shields.io/badge/segno-111111?style=for-the-badge
+[segno-url]: https://segno.readthedocs.io/
 [pytest-badge]: https://img.shields.io/badge/pytest-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white
 [pytest-url]: https://pytest.org/

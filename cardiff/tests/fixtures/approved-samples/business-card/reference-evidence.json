@@ -1,8 +1,8 @@
 {
   "template_id": "business-card",
-  "manifest_fingerprint": "417786f4a3a024f8bf45611fa5ef4ab6a02e2fb16b5b21ff2da32bf435107690",
-  "request_fingerprint": "e4a1f072d761fd56851fb3719f17257449299b89c0f8ceb13fb40dea769ad1a1",
-  "tex_fingerprint": "e4d78bb45191b951fbed30775162cca1a14014bcce0ad90ef0869ece9246cd60",
+  "manifest_fingerprint": "eb182c553dec2a88f24dc52df2b8745170e0ebfe8f09bec3e2edecb8cc5fb498",
+  "request_fingerprint": "3f26c4b5b1ac75792a7693a934be54291b9e543acb7e58041d0d67c8d50b2e58",
+  "tex_fingerprint": "9994df901f3f8055b1016496bb0bb98bff907cc65760413080918c672091dfc3",
   "pdf_fingerprint": "89eb5b2f53a4a2eaa410c3c448c59ca749022f7bc83b181e62e9f0927b853567",
   "runtime_name": "deterministic-tex-adapter",
   "runtime_version": "1",

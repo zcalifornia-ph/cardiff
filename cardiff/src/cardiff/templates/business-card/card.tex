@@ -1,5 +1,6 @@
 \documentclass[9pt]{article}
 \usepackage[paperwidth=3.5in,paperheight=2in,margin=0.12in]{geometry}
+\usepackage{graphicx}
 \pagestyle{empty}
 \begin{document}
 \raggedright
@@ -10,5 +11,5 @@
 {{ address_block }}\\
 Variant: {{ variant }}\\
 Accent: {{ accent_hex }}\\
-QR: {{ include_qr }}
+\cardiffqr[width=0.6in]
 \end{document}
