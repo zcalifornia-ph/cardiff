@@ -215,3 +215,66 @@ def test_deterministic_adapter_fails_clearly_on_non_ascii_template_title():
     assert result.output_path is None
     assert any("non-ASCII" in message for message in result.diagnostics)
     assert any("title" in message for message in result.diagnostics)
+
+
+def _make_template_with_source(source: str, tmp_path_factory=None):
+    """Create a ResolvedTemplate backed by a real file with custom TeX source."""
+    request = _load_request()
+    resolved = resolve_template(request.template)
+    # Write bad source to a sibling file so read_text picks it up
+    bad_tex = resolved.entrypoint_path.parent / "_test_bad_card.tex"
+    bad_tex.write_text(source, encoding="utf-8")
+    return replace(resolved, entrypoint_path=bad_tex), bad_tex
+
+
+def test_unknown_placeholder_is_rejected_before_pdf_generation():
+    request = _load_request()
+    resolved = resolve_template(request.template)
+    good_source = resolved.entrypoint_path.read_text()
+    bad_resolved, bad_tex = _make_template_with_source(
+        good_source + "\n{{ does_not_exist }}\n"
+    )
+
+    try:
+        with patch(
+            "cardiff.rendering.pipeline.resolve_template",
+            return_value=bad_resolved,
+        ):
+            result = render_request_to_pdf(
+                request,
+                APPROVED_SAMPLES / "unknown-placeholder.pdf",
+                approved_asset_roots=(APPROVED_ASSETS,),
+                tex_adapter=DeterministicTeXAdapter(),
+            )
+
+        assert result.status == RenderStatus.FAILED
+        assert result.failure_class == RenderFailureClass.TEMPLATE_PLACEHOLDER_UNKNOWN
+        assert any("does_not_exist" in msg for msg in result.diagnostics)
+    finally:
+        bad_tex.unlink(missing_ok=True)
+
+
+def test_multiple_unknown_placeholders_are_all_reported():
+    request = _load_request()
+    bad_resolved, bad_tex = _make_template_with_source(
+        "{{ unknown_a }} {{ unknown_b }}"
+    )
+
+    try:
+        with patch(
+            "cardiff.rendering.pipeline.resolve_template",
+            return_value=bad_resolved,
+        ):
+            result = render_request_to_pdf(
+                request,
+                APPROVED_SAMPLES / "multi-unknown.pdf",
+                approved_asset_roots=(APPROVED_ASSETS,),
+                tex_adapter=DeterministicTeXAdapter(),
+            )
+
+        assert result.status == RenderStatus.FAILED
+        assert result.failure_class == RenderFailureClass.TEMPLATE_PLACEHOLDER_UNKNOWN
+        assert any("unknown_a" in msg for msg in result.diagnostics)
+        assert any("unknown_b" in msg for msg in result.diagnostics)
+    finally:
+        bad_tex.unlink(missing_ok=True)
