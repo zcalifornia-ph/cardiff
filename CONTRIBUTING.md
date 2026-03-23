@@ -31,17 +31,24 @@ Strong contributions usually:
 ## Workflow
 
 1. Fork the repository.
-2. Create a short-lived branch from `main`.
+2. Create a short-lived branch from `rev`.
 3. Name the branch in kebab-case and start it with the relevant Conventional Commit type.
 4. Make the smallest cohesive change that solves the problem.
 5. Update docs and tests when applicable.
-6. Open a pull request with clear context and verification details.
+6. Open a pull request targeting `rev` with clear context and verification details.
+7. Delete the branch after the pull request is merged.
 
 Example branch name:
 
 ```text
 feat/add-cli-render-command
 ```
+
+Branch policy notes:
+
+- Use short-lived branches only.
+- Keep one branch focused on one issue or cohesive change.
+- Sync `rev` before creating a new branch.
 
 ## Commit Messages
 
