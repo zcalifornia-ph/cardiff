@@ -1,6 +1,29 @@
 # Changelog
 
-Status: pre-alpha; `UNIT-001` is complete and the repository currently contains QR-directive rendering, deterministic/Unicode rendering clarification work, and normalized reference-evidence comparison.
+Status: pre-alpha; `UNIT-001` is complete and the repository currently contains QR-directive rendering, deterministic/Unicode rendering clarification work, normalized reference-evidence comparison, and fail-fast unknown-template-placeholder rejection.
+
+## v0.1.5
+
+### Added or Changed
+- Advanced the root public release markers from `v0.1.4` to `v0.1.5` in `README.md` and `REQUIREMENTS.md`.
+- Added unknown-template-placeholder failure detection in `cardiff/src/cardiff/rendering/pipeline.py` so unresolved template placeholders now fail with `template_placeholder_unknown` instead of silently rendering as empty strings.
+- Added `RenderFailureClass.TEMPLATE_PLACEHOLDER_UNKNOWN` in `cardiff/src/cardiff/rendering/models.py` to give callers a stable failure taxonomy for this render error.
+- Strengthened `cardiff/tests/rendering/test_pipeline.py` so placeholder-regression coverage uses isolated temp template files and explicitly proves compilation never starts when unknown placeholders are present.
+- Updated `cardiff/docs/render-pipeline.md`, `cardiff/docs/cli-quickstart.md`, and `cardiff/docs/template-authoring.md` so the public rendering contract now documents placeholder validation and the approved placeholder boundary.
+- Updated `CONTRIBUTING.md` so template-related test changes now explicitly require fail-fast unknown-placeholder coverage and acknowledge the current targeted verification baseline.
+- Added `docs/version-0-1-5-docs.md` with the detailed release notes for this placeholder-validation and documentation-alignment update.
+- Verified the targeted suite baseline for the current repo state: `tests/contract` passes (`9`), `tests/rendering` passes (`25`), and `tests/cli` passes (`14`).
+
+### For Deletion
+- `cardiff/tests/fixtures/approved-samples/business-card/.cardiff-qr/` generated QR work directory from non-deterministic rendering runs.
+- `cardiff/tests/fixtures/approved-samples/business-card/_directive-work/` generated QR directive test work directory.
+- `cardiff/tests/fixtures/approved-samples/business-card/cardiff-qr-*/` inaccessible temporary QR directories left behind by earlier runs.
+- `cardiff/tests/fixtures/tmp5jdz_7bl/` orphaned temporary test directory left behind by an earlier failed cleanup attempt.
+- `cardiff/tests/fixtures/tmpr9v8b8nh/` orphaned temporary test directory left behind by an earlier failed cleanup attempt.
+- `cardiff/pytest-cache-files-*/` temporary pytest cache directories that are currently permission-denied in this workspace.
+- `cardiff/tmpgremi45_/` orphaned temporary project-root directory left behind by an earlier failed cleanup attempt.
+- `cardiff/tmpn4v7ks5z/` orphaned temporary project-root directory left behind by an earlier failed cleanup attempt.
+- `tmphk9u2kf5/` orphaned temporary root directory.
 
 ## v0.1.4
 
@@ -12,7 +35,7 @@ Status: pre-alpha; `UNIT-001` is complete and the repository currently contains 
 - Refreshed `cardiff/tests/fixtures/approved-samples/business-card/reference-evidence.json` to the new normalized manifest/request fingerprints and restored the CLI reference-comparison path to exit code `0`.
 - Updated `cardiff/docs/render-pipeline.md`, `cardiff/docs/cli-quickstart.md`, `CONTRIBUTING.md`, and `REQUIREMENTS.md` to document the normalized evidence contract and current verification baseline.
 - Added `docs/version-0-1-4-docs.md` with the detailed release notes for this evidence-portability and root-doc alignment update.
-- Verified the targeted suite baseline for the current repo state: `tests/contract` passes (`9`), `tests/rendering` passes (`23`), and `tests/cli` passes (`14`).
+- Verified the targeted suite baseline for the release snapshot: `tests/contract` passes (`9`), `tests/rendering` passes (`23`), and `tests/cli` passes (`14`).
 
 ### For Deletion
 - `cardiff/tests/fixtures/approved-samples/business-card/.cardiff-qr/` generated QR work directory from non-deterministic rendering runs.

@@ -5,8 +5,8 @@ This guide is the contributor-facing policy for the approved `business-card` tem
 Canonical references:
 
 - Validation contract: [validation-contract.md](/cardiff/cardiff/docs/validation-contract.md)
-- Render lifecycle and evidence model: [render-pipeline.md](/cardiff/cardiff/cardiff/docs/render-pipeline.md)
-- Approved asset-root fixture notes: [README.md](/cardiff/cardiff/cardiff/tests/fixtures/approved-assets/README.md)
+- Render lifecycle and evidence model: [render-pipeline.md](/cardiff/cardiff/docs/render-pipeline.md)
+- Approved asset-root fixture notes: [README.md](/cardiff/cardiff/tests/fixtures/approved-assets/README.md)
 
 ## Approved Template Package
 
@@ -56,6 +56,24 @@ Current approved business-card rendering boundary:
 - `assets.avatar` is not part of the approved business-card manifest and is not used by the current render path.
 - Contributors should not submit business-card template changes that depend on new fields, new asset slots, or extra top-level request keys unless the validation contract and manifest are updated together.
 
+Supported render placeholders today:
+
+- `{{ full_name }}`
+- `{{ role }}`
+- `{{ email }}`
+- `{{ organization }}`
+- `{{ department }}`
+- `{{ phone }}`
+- `{{ website }}`
+- `{{ pronouns }}`
+- `{{ address_block }}`
+- `{{ variant }}`
+- `{{ accent_hex }}`
+- `{{ logo_path }}`
+
+Unknown placeholders are rejected before PDF generation with `template_placeholder_unknown`.
+Contributors should treat that as a template-contract failure, not as a value that will be blanked automatically.
+
 ## Supported Options
 
 - `variant` must be a symbolic slug. For the approved template, the only valid value is `default`.
@@ -79,7 +97,7 @@ Approved path expectations:
 Repository packaging boundary:
 
 - Commit only redistributable placeholder assets, test fixtures, or openly licensed sample assets that the project is allowed to publish.
-- Keep fixture assets under an approved asset-root layout such as [README.md](/cardiff/cardiff/cardiff/tests/fixtures/approved-assets/README.md).
+- Keep fixture assets under an approved asset-root layout such as [README.md](/cardiff/cardiff/tests/fixtures/approved-assets/README.md).
 - Do not commit customer assets, internal brand kits, private QR payloads, or production contact data.
 - Do not commit assets that require secret delivery channels or repository-specific access controls.
 

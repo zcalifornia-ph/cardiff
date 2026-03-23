@@ -1,6 +1,6 @@
 # Requirements
 
-Status: pre-alpha public requirements snapshot for `v0.1.4`.
+Status: pre-alpha public requirements snapshot for `v0.1.5`.
 
 ## Objective
 
@@ -17,6 +17,7 @@ The current public MVP includes:
 - CLI `validate` and `render` commands
 - structured JSON status output and optional reference-evidence comparison
 - normalized manifest/request evidence that stays stable across checkout path and line-ending differences
+- fail-fast rejection of unknown template placeholders before PDF generation starts
 
 ## Acceptance Baseline
 
@@ -25,6 +26,7 @@ The current public MVP includes:
 - CLI `validate` and `render` return actionable structured results with non-zero exits on failure.
 - Deterministic runs can compare normalized evidence against the approved reference record.
 - Reference-evidence comparison remains stable across equivalent checkout paths and line-ending differences.
+- Templates with unknown placeholders fail before PDF generation with a stable render failure class.
 
 ## Recorded Verification
 
@@ -38,7 +40,7 @@ python -m pytest tests/cli -q -p no:cacheprovider
 Expected result:
 
 - 9 contract tests pass
-- 23 rendering tests pass
+- 25 rendering tests pass
 - 14 CLI tests pass
 
 ## Public Source Files
@@ -46,7 +48,8 @@ Expected result:
 - `cardiff/docs/validation-contract.md`
 - `cardiff/docs/render-pipeline.md`
 - `cardiff/docs/cli-quickstart.md`
-- `docs/version-0-1-4-docs.md`
+- `cardiff/docs/template-authoring.md`
+- `docs/version-0-1-5-docs.md`
 - `learn/unit-001-bolt-001a-study-guide.md`
 
 ## Next Units

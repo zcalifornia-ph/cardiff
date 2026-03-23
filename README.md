@@ -28,8 +28,8 @@
   </p>
 
   <p align="center">
-    Version: <code>v0.1.4</code><br>
-    Status: pre-alpha; <code>UNIT-001</code> is complete and the checked-in repo now includes QR-directive rendering support, explicit Unicode-safe local rendering guidance, and stable normalized-evidence comparison.
+    Version: <code>v0.1.5</code><br>
+    Status: pre-alpha; <code>UNIT-001</code> is complete and the checked-in repo now includes QR-directive rendering support, explicit Unicode-safe local rendering guidance, stable normalized-evidence comparison, and fail-fast rejection of unknown template placeholders before PDF generation.
     <br />
     <a href="REQUIREMENTS.md"><strong>Explore the docs »</strong></a>
     <br />
@@ -112,6 +112,7 @@ What is in place today:
 - deterministic local PDF generation for stable ASCII-only smoke checks plus a real `XeLaTeXAdapter` boundary for Unicode-safe runtime parity when `xelatex` is available
 - CLI, contract, and rendering tests and fixtures under `cardiff/tests/`, including directive-focused coverage in `cardiff/tests/rendering/test_directives.py`
 - implementation documentation in `cardiff/docs/validation-contract.md`, `cardiff/docs/render-pipeline.md`, and `cardiff/docs/cli-quickstart.md`
+- contributor-facing template guidance in `cardiff/docs/template-authoring.md`
 - stored approval artifacts in `cardiff/tests/fixtures/approved-samples/business-card/`
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -126,6 +127,7 @@ Supported behavior today:
 - validate required identity fields, supported template options, and approved asset paths before rendering
 - render the approved `business-card` template to a requested PDF path
 - preprocess the template's `\cardiffqr[...]` directive into a generated QR PNG or deterministic placeholder, depending on adapter mode
+- reject templates that reference unknown placeholders before PDF generation starts
 - emit structured JSON status payloads for `validate` and `render` commands
 - surface stable validation and render failure classes
 - run deterministic local renders and compare normalized evidence against the approved reference record
@@ -138,7 +140,7 @@ Supported behavior today:
 The current operator flow is:
 
 ```text
-structured request file -> canonical validation -> approved template resolution -> placeholder fill + optional QR directive preprocessing -> TeX adapter compile -> PDF artifact + structured status + normalized evidence
+structured request file -> canonical validation -> approved template resolution -> placeholder validation + fill -> optional QR directive preprocessing -> TeX adapter compile -> PDF artifact + structured status + normalized evidence
 ```
 
 CLI entry paths available now:
@@ -214,7 +216,7 @@ Current commands:
 Expected current result:
 
 - 9 contract tests pass
-- 23 rendering tests pass
+- 25 rendering tests pass
 - 14 CLI tests pass
 
 Optional reference-comparison check:
@@ -229,7 +231,7 @@ Expected optional result:
 - the reference comparison returns exit code `0`
 - the normalized manifest and canonical request fingerprints remain stable across checkout path and line-ending differences
 
-Current repo note: broad collection with `python -m pytest tests -q -p no:cacheprovider` can also fail until temporary QR work directories under `cardiff/tests/fixtures/approved-samples/business-card/` are cleaned.
+Current repo note: broad collection with `python -m pytest tests -q -p no:cacheprovider` can also fail until leftover temporary directories in the workspace are cleaned.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -260,6 +262,7 @@ cardiff/
     docs/
       cli-quickstart.md
       render-pipeline.md
+      template-authoring.md
       validation-contract.md
   docs/
     version-0-0-2-docs.md
@@ -270,6 +273,7 @@ cardiff/
     version-0-1-2-docs.md
     version-0-1-3-docs.md
     version-0-1-4-docs.md
+    version-0-1-5-docs.md
   learn/
     unit-001-bolt-001a-study-guide.md
   README.md
@@ -307,8 +311,9 @@ Start with these project artifacts:
 - `cardiff/docs/validation-contract.md` for the canonical request contract
 - `cardiff/docs/render-pipeline.md` for the shared render pipeline and adapter behavior
 - `cardiff/docs/cli-quickstart.md` for the current CLI workflow and exit-code contract
+- `cardiff/docs/template-authoring.md` for the approved business-card template package rules and contributor-facing template expectations
 - `learn/unit-001-bolt-001a-study-guide.md` for the guided walkthrough of the contract foundation
-- `docs/version-0-1-4-docs.md` for the current documentation-release notes beyond this README and changelog
+- `docs/version-0-1-5-docs.md` for the latest checked-in versioned documentation-release notes beyond this README and changelog
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

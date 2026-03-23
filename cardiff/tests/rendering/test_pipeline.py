@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from pathlib import Path
+import tempfile
 from unittest.mock import patch
 
 import pytest
@@ -18,6 +19,7 @@ from cardiff.rendering import (
 from cardiff.rendering.tex import BaseTeXAdapter, TeXCompileArtifact
 
 FIXTURES_ROOT = Path(__file__).resolve().parents[1] / "fixtures"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 APPROVED_ASSETS = FIXTURES_ROOT / "approved-assets"
 APPROVED_SAMPLES = FIXTURES_ROOT / "approved-samples" / "business-card"
 REQUEST_PATH = FIXTURES_ROOT / "requests" / "valid-request.yaml"
@@ -60,6 +62,27 @@ class FakeNonDeterministicAdapter(BaseTeXAdapter):
             runtime_name=self.runtime_name,
             runtime_version=self.runtime_version,
         )
+
+
+class CompileTrackingAdapter(BaseTeXAdapter):
+    runtime_name = "compile-tracking-adapter"
+    runtime_version = "1"
+    deterministic = True
+
+    def __init__(self) -> None:
+        self.compile_calls = 0
+
+    def compile(
+        self,
+        tex_source: str,
+        output_path: str | Path,
+        *,
+        page_size_pt: tuple[float, float],
+        preview_lines: tuple[str, ...],
+        title: str,
+    ) -> TeXCompileArtifact:
+        self.compile_calls += 1
+        raise AssertionError("compile() should not be called for unknown placeholders")
 
 
 def test_pipeline_writes_pdf_to_the_requested_output_path():
