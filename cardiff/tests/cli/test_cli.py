@@ -224,7 +224,7 @@ import sys
 from pathlib import Path
 from contextlib import redirect_stderr, redirect_stdout
 
-from cardiff.cli import main
+from cardiff.cli import main, compare_reference_evidence
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 FIXTURES_ROOT = Path(__file__).resolve().parents[1] / 'fixtures'
@@ -376,3 +376,72 @@ def test_python_dash_m_entrypoint_supports_validate_command():
     assert payload['command'] == 'validate'
     assert payload['status'] == 'accepted'
     assert payload['template_id'] == 'business-card'
+
+
+# ==============================================================================
+# Tests for compare_reference_evidence (fixes #8)
+# ==============================================================================
+
+
+def test_compare_reference_evidence_returns_match_when_payloads_are_identical():
+    """When current and reference have the same keys and values, status is match."""
+    current = {'a': 1, 'b': 'hello'}
+    reference = {'a': 1, 'b': 'hello'}
+    result = compare_reference_evidence(current, reference, Path('ref.json'))
+
+    assert result.status == 'match'
+    assert result.mismatches == ()
+
+
+def test_compare_reference_evidence_detects_missing_fields_in_current():
+    """When reference has fields missing from current, status is mismatch."""
+    current = {'a': 1}
+    reference = {'a': 1, 'b': 2}
+    result = compare_reference_evidence(current, reference, Path('ref.json'))
+
+    assert result.status == 'mismatch'
+    assert len(result.mismatches) == 1
+    assert result.mismatches[0]['field'] == 'b'
+    assert result.mismatches[0]['expected'] == 2
+    assert result.mismatches[0]['actual'] is None
+
+
+def test_compare_reference_evidence_detects_unexpected_fields_in_current():
+    """When current has extra fields not in reference, status is mismatch."""
+    current = {'a': 1, 'b': 2}
+    reference = {'a': 1}
+    result = compare_reference_evidence(current, reference, Path('ref.json'))
+
+    assert result.status == 'mismatch'
+    assert len(result.mismatches) == 1
+    assert result.mismatches[0]['field'] == 'b'
+    assert result.mismatches[0]['expected'] is None
+    assert result.mismatches[0]['actual'] == 2
+
+
+def test_compare_reference_evidence_detects_value_differences():
+    """When a field exists in both but values differ, status is mismatch."""
+    current = {'a': 1, 'b': 'changed'}
+    reference = {'a': 1, 'b': 'original'}
+    result = compare_reference_evidence(current, reference, Path('ref.json'))
+
+    assert result.status == 'mismatch'
+    assert len(result.mismatches) == 1
+    assert result.mismatches[0]['field'] == 'b'
+    assert result.mismatches[0]['expected'] == 'original'
+    assert result.mismatches[0]['actual'] == 'changed'
+
+
+def test_compare_reference_evidence_reports_multiple_mismatches():
+    """When multiple fields differ, all are reported."""
+    current = {'a': 99, 'c': 'extra'}
+    reference = {'a': 1, 'b': 'missing'}
+    result = compare_reference_evidence(current, reference, Path('ref.json'))
+
+    assert result.status == 'mismatch'
+    # Should have 3 mismatches: 'a' value differs, 'b' missing from current, 'c' extra in current
+    assert len(result.mismatches) == 3
+
+    fields = {m['field'] for m in result.mismatches}
+    assert fields == {'a', 'b', 'c'}
+

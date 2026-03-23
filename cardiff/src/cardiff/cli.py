@@ -557,9 +557,16 @@ def compare_reference_evidence(
     reference_payload: dict[str, object],
     reference_path: Path,
 ) -> ReferenceComparison:
-    """Compare current render evidence against a stored reference payload."""
+    """Compare current render evidence against a stored reference payload.
+
+    Both payloads must have identical keys for a match. If either payload
+    contains fields not present in the other, or if any field values differ,
+    the comparison returns a mismatch.
+    """
 
     mismatches: list[dict[str, object]] = []
+
+    # Check for missing fields in current payload (present in reference but not current)
     for field_name in sorted(reference_payload):
         actual_value = current_payload.get(field_name)
         expected_value = reference_payload[field_name]
@@ -571,6 +578,17 @@ def compare_reference_evidence(
                     'actual': actual_value,
                 }
             )
+
+    # Check for unexpected fields in current payload (present in current but not reference)
+    unexpected_fields = set(current_payload.keys()) - set(reference_payload.keys())
+    for field_name in sorted(unexpected_fields):
+        mismatches.append(
+            {
+                'field': field_name,
+                'expected': None,
+                'actual': current_payload[field_name],
+            }
+        )
 
     return ReferenceComparison(
         status='match' if not mismatches else 'mismatch',
