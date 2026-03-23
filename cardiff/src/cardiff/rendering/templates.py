@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from cardiff.contract.models import RenderRequest, TemplateSelection
+from cardiff.paths import normalize_approved_asset_roots
 
 from .models import (
     RenderFailureClass,
@@ -82,7 +83,7 @@ def resolve_asset_paths(
 ) -> dict[str, Path]:
     """Resolve request asset references against approved roots and template rules."""
 
-    approved_roots = tuple(Path(root).resolve() for root in (approved_asset_roots or ()))
+    approved_roots = normalize_approved_asset_roots(approved_asset_roots)
     resolved_assets: dict[str, Path] = {}
 
     expected_slots = tuple(dict.fromkeys((*resolved_template.descriptor.required_asset_slots, *resolved_template.descriptor.optional_asset_slots)))

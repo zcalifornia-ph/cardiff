@@ -224,6 +224,8 @@ from pathlib import Path
 import re
 from urllib.parse import urlparse
 
+from cardiff.paths import normalize_approved_asset_roots
+
 from .errors import ValidationCode, ValidationOutcome
 from .models import (
     AssetReference,
@@ -268,7 +270,7 @@ def validate_render_request(
     """Validate a parsed mapping and return a sanitized canonical request."""
 
     issues: list[ValidationIssue] = []
-    approved_roots = tuple(Path(root) for root in (approved_asset_roots or (Path("assets"),)))
+    approved_roots = normalize_approved_asset_roots(tuple(approved_asset_roots or ()))
 
     if not isinstance(payload, Mapping):
         issues.append(
@@ -367,6 +369,7 @@ def validate_asset_reference(
 
     slot = asset_reference.slot
     candidate = asset_reference.path
+    resolved_roots = normalize_approved_asset_roots(tuple(approved_roots))
 
     if slot not in ASSET_SLOTS:
         return _finalize_issues(
@@ -394,7 +397,7 @@ def validate_asset_reference(
     asset_path = Path(candidate)
     if asset_path.is_absolute():
         normalized = asset_path.resolve()
-        if not any(normalized.is_relative_to(Path(root).resolve()) for root in approved_roots):
+        if not any(normalized.is_relative_to(root) for root in resolved_roots):
             return _finalize_issues(
                 [
                     ValidationIssue(
@@ -405,6 +408,16 @@ def validate_asset_reference(
                 ]
             )
     else:
+        if not resolved_roots:
+            return _finalize_issues(
+                [
+                    ValidationIssue(
+                        code=ValidationCode.INVALID_ASSET_PATH,
+                        field=f"assets.{slot}",
+                        message="relative asset paths require at least one approved root",
+                    )
+                ]
+            )
         if ".." in asset_path.parts:
             return _finalize_issues(
                 [
