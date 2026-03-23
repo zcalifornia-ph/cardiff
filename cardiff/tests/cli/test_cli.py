@@ -406,6 +406,19 @@ def test_compare_reference_evidence_detects_missing_fields_in_current():
     assert result.mismatches[0]['actual'] is None
 
 
+def test_compare_reference_evidence_detects_missing_nullable_fields_in_current():
+    """Missing keys must mismatch even when the reference value is null."""
+    current = {}
+    reference = {'a': None}
+    result = compare_reference_evidence(current, reference, Path('ref.json'))
+
+    assert result.status == 'mismatch'
+    assert len(result.mismatches) == 1
+    assert result.mismatches[0]['field'] == 'a'
+    assert result.mismatches[0]['expected'] is None
+    assert result.mismatches[0]['actual'] is None
+
+
 def test_compare_reference_evidence_detects_unexpected_fields_in_current():
     """When current has extra fields not in reference, status is mismatch."""
     current = {'a': 1, 'b': 2}
