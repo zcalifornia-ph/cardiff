@@ -20,6 +20,7 @@ class RenderFailureClass(StrEnum):
     TEMPLATE_NOT_FOUND = "template_not_found"
     TEMPLATE_MANIFEST_INVALID = "template_manifest_invalid"
     TEMPLATE_ASSET_MISSING = "template_asset_missing"
+    TEMPLATE_PLACEHOLDER_UNKNOWN = "template_placeholder_unknown"
     UNSUPPORTED_TEMPLATE_OPTION = "unsupported_template_option"
     TEX_COMPILE_FAILED = "tex_compile_failed"
     RENDER_OUTPUT_INVALID = "render_output_invalid"
