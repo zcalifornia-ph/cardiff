@@ -62,8 +62,8 @@ assert render_result.succeeded
 
 The normalized evidence record captures:
 
-- manifest fingerprint
-- canonical request fingerprint
+- normalized manifest fingerprint from parsed manifest JSON instead of raw checkout bytes
+- canonical request fingerprint from the sanitized request payload without source path or source-format metadata
 - rendered TeX fingerprint
 - PDF fingerprint
 - adapter runtime name and version

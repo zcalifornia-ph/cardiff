@@ -119,13 +119,14 @@ def render_request_to_pdf(
                 "adapter reported success but did not produce a non-empty PDF artifact",
             )
 
+        # Keep evidence stable across equivalent checkouts and input transport details.
         evidence = NormalizedRenderEvidence(
             template_id=template_id,
-            manifest_fingerprint=_sha256_bytes(
-                resolved_template.manifest_path.read_bytes()
+            manifest_fingerprint=_sha256_text(
+                _canonical_json_file_text(resolved_template.manifest_path)
             ),
             request_fingerprint=_sha256_text(
-                json.dumps(render_request.to_dict(include_source=True), sort_keys=True)
+                _canonical_json_text(render_request.to_dict())
             ),
             tex_fingerprint=_sha256_text(evidence_tex),
             pdf_fingerprint=_sha256_bytes(
@@ -211,6 +212,26 @@ def _build_preview_lines(
 
 def _sha256_text(value: str) -> str:
     return _sha256_bytes(value.encode("utf-8"))
+
+
+def _canonical_json_file_text(path: Path) -> str:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise RenderingError(
+            RenderFailureClass.TEMPLATE_MANIFEST_INVALID,
+            f"failed to normalize template manifest '{path.as_posix()}': {error}",
+        ) from error
+    return _canonical_json_text(payload)
+
+
+def _canonical_json_text(payload: object) -> str:
+    return json.dumps(
+        payload,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
 
 
 def _sha256_bytes(value: bytes) -> str:

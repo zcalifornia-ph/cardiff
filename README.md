@@ -28,8 +28,8 @@
   </p>
 
   <p align="center">
-    Version: <code>v0.1.3</code><br>
-    Status: pre-alpha; <code>UNIT-001</code> is complete and the checked-in repo now includes QR-directive rendering support, expanded rendering coverage, and explicit Unicode-safe local rendering guidance.
+    Version: <code>v0.1.4</code><br>
+    Status: pre-alpha; <code>UNIT-001</code> is complete and the checked-in repo now includes QR-directive rendering support, explicit Unicode-safe local rendering guidance, and stable normalized-evidence comparison.
     <br />
     <a href="REQUIREMENTS.md"><strong>Explore the docs »</strong></a>
     <br />
@@ -173,14 +173,14 @@ Current commands:
 3. Create and activate a virtual environment:
 
    ```powershell
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
    ```
 
    If you are using `bash` or `zsh` instead of PowerShell:
 
    ```bash
-   source .venv/bin/activate
+   source venv/bin/activate
    ```
 
 4. Install the package and test dependencies:
@@ -213,15 +213,21 @@ Current commands:
 
 Expected current result:
 
-- 8 contract tests pass
-- 21 rendering tests pass
-- 11 of 12 CLI tests pass; the stored `reference-evidence.json` currently needs refresh, so the reference-comparison path is expected to return exit code `4`
+- 9 contract tests pass
+- 23 rendering tests pass
+- 14 CLI tests pass
 
 Optional reference-comparison check:
 
 ```powershell
 python -m cardiff render tests/fixtures/requests/valid-request.yaml --approved-asset-root tests/fixtures/approved-assets --output tests/fixtures/approved-samples/business-card/determinism-output.pdf --deterministic --reference-evidence tests/fixtures/approved-samples/business-card/reference-evidence.json
 ```
+
+Expected optional result:
+
+- the render succeeds
+- the reference comparison returns exit code `0`
+- the normalized manifest and canonical request fingerprints remain stable across checkout path and line-ending differences
 
 Current repo note: broad collection with `python -m pytest tests -q -p no:cacheprovider` can also fail until temporary QR work directories under `cardiff/tests/fixtures/approved-samples/business-card/` are cleaned.
 
@@ -263,6 +269,7 @@ cardiff/
     version-0-1-1-docs.md
     version-0-1-2-docs.md
     version-0-1-3-docs.md
+    version-0-1-4-docs.md
   learn/
     unit-001-bolt-001a-study-guide.md
   README.md
@@ -301,7 +308,7 @@ Start with these project artifacts:
 - `cardiff/docs/render-pipeline.md` for the shared render pipeline and adapter behavior
 - `cardiff/docs/cli-quickstart.md` for the current CLI workflow and exit-code contract
 - `learn/unit-001-bolt-001a-study-guide.md` for the guided walkthrough of the contract foundation
-- `docs/version-0-1-3-docs.md` for the current documentation-release notes beyond this README and changelog
+- `docs/version-0-1-4-docs.md` for the current documentation-release notes beyond this README and changelog
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

@@ -35,6 +35,8 @@ python -m cardiff render tests/fixtures/requests/valid-request.yaml --approved-a
 
 When the current normalized render evidence matches the approved reference JSON, the command returns exit code `0`. If the PDF renders successfully but the normalized evidence differs, the command returns exit code `4` and reports the mismatched fields in `reference_comparison`.
 
+The reference-evidence comparison normalizes the template manifest and the canonical request payload before hashing, so the approved record stays portable across checkout path and line-ending differences.
+
 ## Exit Codes
 
 - `0`: command succeeded

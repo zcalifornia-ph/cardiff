@@ -15,7 +15,8 @@ Contributions should stay tightly aligned with the approved roadmap instead of j
 - If you change the request contract, update `cardiff/docs/validation-contract.md` and the relevant tests in `cardiff/tests/contract/`.
 - If you change template resolution, rendering behavior, or QR directive preprocessing, update `cardiff/docs/render-pipeline.md` and the relevant tests in `cardiff/tests/rendering/`, including `test_directives.py` when directive or vCard behavior changes.
 - If you change CLI behavior, entrypoint wiring, status payloads, or exit-code semantics, update `cardiff/docs/cli-quickstart.md` and the relevant tests in `cardiff/tests/cli/`.
-- If you change the approved sample request, template manifest, deterministic render behavior, or any fingerprint-bearing artifact, refresh `cardiff/tests/fixtures/approved-samples/business-card/reference-evidence.json` and call that out in your pull request.
+- If you change the approved sample request, template manifest semantics, deterministic render behavior, or any fingerprint-bearing artifact, refresh `cardiff/tests/fixtures/approved-samples/business-card/reference-evidence.json` and call that out in your pull request.
+- Do not refresh reference evidence for path-only or line-ending-only checkout differences; the normalized evidence fingerprints are expected to stay stable across those environment details.
 - Do not include generated Python cache files, bytecode, or editable-install metadata in a contribution.
 - Do not commit temporary QR work directories or generated directive scratch space from `cardiff/tests/fixtures/approved-samples/business-card/`.
 - Make sure your work follows `CODE_OF_CONDUCT.md` and `SECURITY.md`.
