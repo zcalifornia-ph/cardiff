@@ -568,8 +568,18 @@ def compare_reference_evidence(
 
     # Check for missing fields in current payload (present in reference but not current)
     for field_name in sorted(reference_payload):
-        actual_value = current_payload.get(field_name)
         expected_value = reference_payload[field_name]
+        if field_name not in current_payload:
+            mismatches.append(
+                {
+                    'field': field_name,
+                    'expected': expected_value,
+                    'actual': None,
+                }
+            )
+            continue
+
+        actual_value = current_payload[field_name]
         if actual_value != expected_value:
             mismatches.append(
                 {

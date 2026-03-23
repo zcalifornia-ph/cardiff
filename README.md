@@ -28,8 +28,8 @@
   </p>
 
   <p align="center">
-    Version: <code>v0.1.1</code><br>
-    Status: pre-alpha; <code>UNIT-001</code> is complete and the checked-in repo now includes QR-directive rendering support plus expanded rendering coverage.
+    Version: <code>v0.1.3</code><br>
+    Status: pre-alpha; <code>UNIT-001</code> is complete and the checked-in repo now includes QR-directive rendering support, expanded rendering coverage, and explicit Unicode-safe local rendering guidance.
     <br />
     <a href="REQUIREMENTS.md"><strong>Explore the docs »</strong></a>
     <br />
@@ -109,7 +109,7 @@ What is in place today:
 - manifest-driven template resolution for the approved `business-card` template package in `cardiff/src/cardiff/templates/business-card/`
 - a first CLI adapter in `cardiff/src/cardiff/cli.py` with `validate` and `render` commands
 - installed-package and source-checkout entry paths through `cardiff/src/cardiff/__main__.py` and `cardiff/cardiff.py`
-- deterministic local PDF generation plus a real `XeLaTeXAdapter` boundary for runtime parity work when `xelatex` is available
+- deterministic local PDF generation for stable ASCII-only smoke checks plus a real `XeLaTeXAdapter` boundary for Unicode-safe runtime parity when `xelatex` is available
 - CLI, contract, and rendering tests and fixtures under `cardiff/tests/`, including directive-focused coverage in `cardiff/tests/rendering/test_directives.py`
 - implementation documentation in `cardiff/docs/validation-contract.md`, `cardiff/docs/render-pipeline.md`, and `cardiff/docs/cli-quickstart.md`
 - stored approval artifacts in `cardiff/tests/fixtures/approved-samples/business-card/`
@@ -159,7 +159,7 @@ Current commands:
 
 - Python `3.12+`
 - `pip`
-- Optional: `xelatex` on `PATH` if you want runtime parity with the real compiler instead of deterministic fallback mode
+- Recommended: `xelatex` on `PATH` for Unicode-safe local rendering. Without it, Cardiff falls back to the deterministic adapter, which is intended for stable ASCII-only local/test rendering and will fail on non-ASCII preview or title text.
 
 ### Quick Start
 
@@ -201,6 +201,8 @@ Current commands:
    python -m cardiff render tests/fixtures/requests/valid-request.yaml --approved-asset-root tests/fixtures/approved-assets --output tests/fixtures/approved-samples/business-card/determinism-output.pdf --deterministic
    ```
 
+   Use `--deterministic` for stable ASCII-only fallback checks. Install `xelatex` when you need Unicode-safe local rendering.
+
 7. Run the currently stable targeted suites:
 
    ```powershell
@@ -212,8 +214,8 @@ Current commands:
 Expected current result:
 
 - 8 contract tests pass
-- 16 rendering tests pass
-- 5 of 6 CLI tests pass; the stored `reference-evidence.json` currently needs refresh, so the reference-comparison path is expected to return exit code `4`
+- 21 rendering tests pass
+- 11 of 12 CLI tests pass; the stored `reference-evidence.json` currently needs refresh, so the reference-comparison path is expected to return exit code `4`
 
 Optional reference-comparison check:
 
@@ -259,6 +261,8 @@ cardiff/
     version-0-0-4-docs.md
     version-0-1-0-docs.md
     version-0-1-1-docs.md
+    version-0-1-2-docs.md
+    version-0-1-3-docs.md
   learn/
     unit-001-bolt-001a-study-guide.md
   README.md
@@ -291,13 +295,13 @@ See the [open issues](https://github.com/zcalifornia-ph/cardiff/issues) for prop
 Start with these project artifacts:
 
 - `README.md` for the repo-level product and status summary
-- `CHANGELOG.md` for the latest repo-state notes, cleanup candidates, and unreleased documentation reconciliation
+- `CHANGELOG.md` for the latest repo-state notes, cleanup candidates, and release history
 - `REQUIREMENTS.md` for the public implementation scope, current unit status, and acceptance baseline
 - `cardiff/docs/validation-contract.md` for the canonical request contract
 - `cardiff/docs/render-pipeline.md` for the shared render pipeline and adapter behavior
 - `cardiff/docs/cli-quickstart.md` for the current CLI workflow and exit-code contract
 - `learn/unit-001-bolt-001a-study-guide.md` for the guided walkthrough of the contract foundation
-- `docs/version-0-1-1-docs.md` for the current documentation-release notes beyond this README and changelog
+- `docs/version-0-1-3-docs.md` for the current documentation-release notes beyond this README and changelog
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

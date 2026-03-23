@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 from unittest.mock import patch
+
+import pytest
 
 from cardiff.contract import load_and_validate_request
 from cardiff.contract.errors import ValidationOutcome
@@ -10,6 +13,7 @@ from cardiff.rendering import (
     RenderFailureClass,
     RenderStatus,
     render_request_to_pdf,
+    resolve_template,
 )
 from cardiff.rendering.tex import BaseTeXAdapter, TeXCompileArtifact
 
@@ -143,3 +147,71 @@ def test_non_deterministic_qr_renders_keep_normalized_evidence_stable():
     assert first.rendered_tex is not None
     assert ".cardiff-qr/qr-evidence-stability-cardiff-qr.png" in first.rendered_tex
     assert first.evidence.to_dict() == second.evidence.to_dict()
+
+
+@pytest.mark.parametrize(
+    ("identity_updates", "expected_fragment", "output_name"),
+    [
+        ({"full_name": "José Álvarez"}, "preview_lines[0]", "unicode-name.pdf"),
+        ({"role": "Diseñadora Sénior"}, "preview_lines[1]", "unicode-role.pdf"),
+        ({"organization": "Niño Labs"}, "preview_lines[2]", "unicode-organization.pdf"),
+        (
+            {"address_lines": ("123 Rue de l'Église", "London")},
+            "preview_lines[4]",
+            "unicode-address.pdf",
+        ),
+    ],
+)
+def test_deterministic_adapter_fails_clearly_on_non_ascii_identity_text(
+    identity_updates,
+    expected_fragment,
+    output_name,
+):
+    request = _load_request()
+    unicode_request = replace(
+        request,
+        identity=replace(request.identity, **identity_updates),
+    )
+    output_path = APPROVED_SAMPLES / output_name
+
+    result = render_request_to_pdf(
+        unicode_request,
+        output_path,
+        approved_asset_roots=(APPROVED_ASSETS,),
+        tex_adapter=DeterministicTeXAdapter(),
+    )
+
+    assert result.status == RenderStatus.FAILED
+    assert result.failure_class == RenderFailureClass.TEX_COMPILE_FAILED
+    assert result.output_path is None
+    assert any("non-ASCII" in message for message in result.diagnostics)
+    assert any(expected_fragment in message for message in result.diagnostics)
+
+
+def test_deterministic_adapter_fails_clearly_on_non_ascii_template_title():
+    request = _load_request()
+    resolved_template = resolve_template(request.template)
+    unicode_title_template = replace(
+        resolved_template,
+        descriptor=replace(
+            resolved_template.descriptor,
+            display_name="Tarjeta José",
+        ),
+    )
+
+    with patch(
+        "cardiff.rendering.pipeline.resolve_template",
+        return_value=unicode_title_template,
+    ):
+        result = render_request_to_pdf(
+            request,
+            APPROVED_SAMPLES / "unicode-title.pdf",
+            approved_asset_roots=(APPROVED_ASSETS,),
+            tex_adapter=DeterministicTeXAdapter(),
+        )
+
+    assert result.status == RenderStatus.FAILED
+    assert result.failure_class == RenderFailureClass.TEX_COMPILE_FAILED
+    assert result.output_path is None
+    assert any("non-ASCII" in message for message in result.diagnostics)
+    assert any("title" in message for message in result.diagnostics)
