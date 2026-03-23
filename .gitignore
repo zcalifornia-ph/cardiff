@@ -7,3 +7,5 @@ cardiff/src/__pycache__/
 *.pyc
 cardiff.egg-info/
 dump/
+
+.venv
