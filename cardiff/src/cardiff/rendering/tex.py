@@ -169,6 +169,10 @@ def _build_minimal_pdf(
     page_size_pt: tuple[float, float],
     title: str,
 ) -> bytes:
+    _ensure_ascii_preview_text(title, field_name="title")
+    for index, line in enumerate(preview_lines):
+        _ensure_ascii_preview_text(line, field_name=f"preview_lines[{index}]")
+
     width_pt, height_pt = page_size_pt
     y = height_pt - 18.0
     commands = ["BT", "/F1 9 Tf"]
@@ -213,8 +217,21 @@ def _build_minimal_pdf(
 
 
 def _escape_pdf_text(value: str) -> str:
-    escaped = value.encode("ascii", errors="replace").decode("ascii")
+    escaped = value.encode("ascii").decode("ascii")
     escaped = escaped.replace("\\", r"\\")
     escaped = escaped.replace("(", r"\(")
     escaped = escaped.replace(")", r"\)")
     return escaped
+
+
+def _ensure_ascii_preview_text(value: str, *, field_name: str) -> None:
+    try:
+        value.encode("ascii")
+    except UnicodeEncodeError as error:
+        raise RenderingError(
+            RenderFailureClass.TEX_COMPILE_FAILED,
+            (
+                "deterministic adapter cannot render non-ASCII text in "
+                f"{field_name}; install xelatex for Unicode-safe rendering"
+            ),
+        ) from error
