@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-import tempfile
 
 from cardiff.contract.models import IdentityProfile
 from cardiff.rendering.directives import (
@@ -10,6 +9,9 @@ from cardiff.rendering.directives import (
     resolve_qr_directives,
     resolve_qr_directives_deterministic,
 )
+
+FIXTURES_ROOT = Path(__file__).resolve().parents[1] / "fixtures"
+APPROVED_SAMPLES = FIXTURES_ROOT / "approved-samples" / "business-card"
 
 
 def _make_identity(**overrides) -> IdentityProfile:
@@ -21,6 +23,12 @@ def _make_identity(**overrides) -> IdentityProfile:
     }
     defaults.update(overrides)
     return IdentityProfile(**defaults)
+
+
+def _work_dir(name: str) -> Path:
+    path = APPROVED_SAMPLES / "_directive-work" / name
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 class TestBuildVcard:
@@ -58,19 +66,20 @@ class TestBuildVcard:
 
 class TestGenerateQrPng:
     def test_creates_valid_png(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            path = generate_qr_png("hello", Path(tmp) / "test.png")
-            assert path.exists()
-            assert path.read_bytes()[:4] == b"\x89PNG"
+        path = generate_qr_png("hello", _work_dir("png") / "test.png")
+        assert path.exists()
+        assert path.read_bytes()[:4] == b"\x89PNG"
 
 
 class TestResolveQrDirectives:
     def test_enabled_replaces_with_includegraphics(self):
         tex = r"before \cardiffqr[width=0.6in] after"
-        with tempfile.TemporaryDirectory() as tmp:
-            result = resolve_qr_directives(
-                tex, _make_identity(), include_qr=True, work_dir=Path(tmp),
-            )
+        result = resolve_qr_directives(
+            tex,
+            _make_identity(),
+            include_qr=True,
+            work_dir=_work_dir("enabled"),
+        )
         assert r"\includegraphics[width=0.6in]" in result
         assert "before" in result
         assert "after" in result
@@ -78,20 +87,24 @@ class TestResolveQrDirectives:
 
     def test_disabled_emits_nothing(self):
         tex = r"before \cardiffqr[width=0.6in] after"
-        with tempfile.TemporaryDirectory() as tmp:
-            result = resolve_qr_directives(
-                tex, _make_identity(), include_qr=False, work_dir=Path(tmp),
-            )
+        result = resolve_qr_directives(
+            tex,
+            _make_identity(),
+            include_qr=False,
+            work_dir=_work_dir("disabled"),
+        )
         assert r"\includegraphics" not in result
         assert r"\cardiffqr" not in result
         assert "before  after" in result
 
     def test_options_pass_through(self):
         tex = r"\cardiffqr[height=1in,keepaspectratio]"
-        with tempfile.TemporaryDirectory() as tmp:
-            result = resolve_qr_directives(
-                tex, _make_identity(), include_qr=True, work_dir=Path(tmp),
-            )
+        result = resolve_qr_directives(
+            tex,
+            _make_identity(),
+            include_qr=True,
+            work_dir=_work_dir("options"),
+        )
         assert r"\includegraphics[height=1in,keepaspectratio]" in result
 
 

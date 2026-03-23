@@ -2,16 +2,19 @@
 
 from __future__ import annotations
 
-import contextlib
 import hashlib
 import json
-import tempfile
 from pathlib import Path
 import re
 
 from cardiff.contract.models import RenderRequest
 
-from .directives import resolve_qr_directives, resolve_qr_directives_deterministic
+from .directives import (
+    CARDIFF_QR_FILENAME,
+    resolve_qr_directives,
+    resolve_qr_directives_deterministic,
+    substitute_qr_directives,
+)
 from .models import (
     NormalizedRenderEvidence,
     RenderFailureClass,
@@ -36,6 +39,7 @@ def render_request_to_pdf(
     """Render one accepted request to a PDF artifact."""
 
     adapter = tex_adapter or get_default_tex_adapter()
+    output = Path(output_path)
     template_id = render_request.template.template_id
     try:
         resolved_template = resolve_template(
@@ -47,47 +51,73 @@ def render_request_to_pdf(
             resolved_template,
             approved_asset_roots=approved_asset_roots,
         )
+        try:
+            output.parent.mkdir(parents=True, exist_ok=True)
+        except OSError as error:
+            raise RenderingError(
+                RenderFailureClass.RENDER_OUTPUT_INVALID,
+                f"failed to prepare output directory '{output.parent.as_posix()}': {error}",
+            ) from error
+
         placeholder_values = _build_placeholder_values(render_request, resolved_assets)
         template_source = resolved_template.entrypoint_path.read_text(encoding="utf-8")
-        rendered_tex = _render_template_source(template_source, placeholder_values)
+        tex_source = _render_template_source(template_source, placeholder_values)
 
         include_qr = bool(render_request.template.options.get("include_qr", False))
+        rendered_tex = tex_source
+        evidence_tex = tex_source
 
-        with contextlib.ExitStack() as stack:
-            if adapter.deterministic:
-                rendered_tex = resolve_qr_directives_deterministic(
-                    rendered_tex, include_qr=include_qr,
-                )
-            else:
-                qr_tmp = Path(stack.enter_context(
-                    tempfile.TemporaryDirectory(prefix="cardiff-qr-")
-                ))
-                rendered_tex = resolve_qr_directives(
-                    rendered_tex,
-                    render_request.identity,
-                    include_qr=include_qr,
-                    work_dir=qr_tmp,
-                )
-
-            preview_lines = _build_preview_lines(render_request, resolved_assets)
-            compile_artifact = adapter.compile(
-                rendered_tex,
-                output_path,
-                page_size_pt=(
-                    resolved_template.descriptor.page_width_pt,
-                    resolved_template.descriptor.page_height_pt,
-                ),
-                preview_lines=preview_lines,
-                title=resolved_template.descriptor.display_name,
+        if adapter.deterministic:
+            rendered_tex = resolve_qr_directives_deterministic(
+                tex_source,
+                include_qr=include_qr,
             )
-            if (
-                not compile_artifact.output_path.exists()
-                or compile_artifact.output_path.stat().st_size == 0
-            ):
-                raise RenderingError(
-                    RenderFailureClass.RENDER_OUTPUT_INVALID,
-                    "adapter reported success but did not produce a non-empty PDF artifact",
-                )
+            evidence_tex = rendered_tex
+        else:
+            evidence_tex = substitute_qr_directives(
+                tex_source,
+                include_qr=include_qr,
+                qr_tex_path=CARDIFF_QR_FILENAME,
+            )
+            if include_qr:
+                qr_work_dir = output.parent / ".cardiff-qr"
+                qr_filename = f"{output.stem}-cardiff-qr.png"
+                try:
+                    qr_work_dir.mkdir(parents=True, exist_ok=True)
+                    rendered_tex = resolve_qr_directives(
+                        tex_source,
+                        render_request.identity,
+                        include_qr=True,
+                        work_dir=qr_work_dir,
+                        qr_filename=qr_filename,
+                    )
+                except Exception as error:
+                    raise RenderingError(
+                        RenderFailureClass.TEX_COMPILE_FAILED,
+                        f"failed to prepare QR directive assets: {error}",
+                    ) from error
+            else:
+                rendered_tex = evidence_tex
+
+        preview_lines = _build_preview_lines(render_request, resolved_assets)
+        compile_artifact = adapter.compile(
+            rendered_tex,
+            output,
+            page_size_pt=(
+                resolved_template.descriptor.page_width_pt,
+                resolved_template.descriptor.page_height_pt,
+            ),
+            preview_lines=preview_lines,
+            title=resolved_template.descriptor.display_name,
+        )
+        if (
+            not compile_artifact.output_path.exists()
+            or compile_artifact.output_path.stat().st_size == 0
+        ):
+            raise RenderingError(
+                RenderFailureClass.RENDER_OUTPUT_INVALID,
+                "adapter reported success but did not produce a non-empty PDF artifact",
+            )
 
         evidence = NormalizedRenderEvidence(
             template_id=template_id,
@@ -97,7 +127,7 @@ def render_request_to_pdf(
             request_fingerprint=_sha256_text(
                 json.dumps(render_request.to_dict(include_source=True), sort_keys=True)
             ),
-            tex_fingerprint=_sha256_text(rendered_tex),
+            tex_fingerprint=_sha256_text(evidence_tex),
             pdf_fingerprint=_sha256_bytes(
                 compile_artifact.output_path.read_bytes()
             ),

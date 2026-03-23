@@ -7,6 +7,7 @@ from pathlib import Path
 
 from cardiff.contract.models import IdentityProfile
 
+CARDIFF_QR_FILENAME = "cardiff-qr.png"
 CARDIFF_QR_PATTERN = re.compile(r"\\cardiffqr\[([^\]]*)\]")
 
 
@@ -42,9 +43,29 @@ def generate_qr_png(data: str, output_path: Path, *, scale: int = 4) -> Path:
 
     import segno
 
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     qr = segno.make(data, error="M")
-    qr.save(str(output_path), kind="png", scale=scale, border=1)
+    with output_path.open("wb") as handle:
+        qr.save(handle, kind="png", scale=scale, border=1)
     return output_path
+
+
+def substitute_qr_directives(
+    tex_source: str,
+    *,
+    include_qr: bool,
+    qr_tex_path: str,
+) -> str:
+    """Replace \\cardiffqr[...] directives with a chosen TeX include path."""
+
+    if not include_qr:
+        return CARDIFF_QR_PATTERN.sub("", tex_source)
+
+    def _replace(match: re.Match[str]) -> str:
+        options = match.group(1)
+        return f"\\includegraphics[{options}]{{{qr_tex_path}}}"
+
+    return CARDIFF_QR_PATTERN.sub(_replace, tex_source)
 
 
 def resolve_qr_directives(
@@ -53,20 +74,24 @@ def resolve_qr_directives(
     *,
     include_qr: bool,
     work_dir: Path,
+    qr_filename: str = CARDIFF_QR_FILENAME,
 ) -> str:
     """Resolve \\cardiffqr[...] directives by generating a QR PNG."""
 
     if not include_qr:
-        return CARDIFF_QR_PATTERN.sub("", tex_source)
+        return substitute_qr_directives(
+            tex_source,
+            include_qr=False,
+            qr_tex_path="",
+        )
 
     vcard = build_vcard(identity)
-    qr_path = generate_qr_png(vcard, work_dir / "cardiff-qr.png")
-
-    def _replace(match: re.Match[str]) -> str:
-        options = match.group(1)
-        return f"\\includegraphics[{options}]{{{qr_path.as_posix()}}}"
-
-    return CARDIFF_QR_PATTERN.sub(_replace, tex_source)
+    qr_path = generate_qr_png(vcard, work_dir / qr_filename)
+    return substitute_qr_directives(
+        tex_source,
+        include_qr=True,
+        qr_tex_path=qr_path.as_posix(),
+    )
 
 
 def resolve_qr_directives_deterministic(
