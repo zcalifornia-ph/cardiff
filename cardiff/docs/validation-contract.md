@@ -4,6 +4,8 @@
 
 `BOLT-001A` defines the first canonical request contract that later CLI, batch, and API adapters must reuse. The contract validates and sanitizes one single-record render request before any template rendering or TeX compilation exists.
 
+Contributor-facing business-card template guidance lives in [template-authoring.md](/cardiff/cardiff/docs/template-authoring.md). That document explains which parts of this shared contract are approved for the current open source template package.
+
 ## Accepted Top-Level Shape
 
 ```yaml
@@ -66,3 +68,10 @@ Each issue includes:
 - Validation errors are returned before any render pipeline exists.
 - Unknown fields are rejected instead of ignored so downstream CLI, batch, and API consumers cannot drift silently.
 - Sanitized requests preserve the original business meaning while escaping LaTeX-significant characters for later rendering stages.
+
+## Approved Template Notes
+
+- The shared contract currently accepts asset slots `logo` and `avatar`, but the approved `business-card` template package only requires `logo`.
+- The shared contract currently accepts template options `variant`, `include_qr`, and `accent_hex`; template-specific support is finalized during template resolution.
+- For the current approved `business-card` manifest, `variant=default` is the only supported variant.
+- Asset references must remain relative to approved asset roots or be absolute paths inside approved asset roots. Parent traversal and remote URLs are rejected.
