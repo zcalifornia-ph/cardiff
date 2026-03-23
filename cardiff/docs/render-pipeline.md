@@ -4,6 +4,8 @@
 
 `BOLT-001B` introduces the first shared render pipeline for Cardiff. It resolves one approved symbolic template, renders TeX from the canonical contract, and produces a PDF artifact plus normalized evidence for deterministic review.
 
+Contributor-facing submission rules for the approved `business-card` package live in [template-authoring.md](/cardiff/cardiff/docs/template-authoring.md). This document remains the canonical description of render stages, template packaging, and evidence outputs.
+
 ## Template Directory Contract
 
 Approved templates live under `cardiff/src/cardiff/templates/<template-id>/`.
@@ -66,3 +68,5 @@ The normalized evidence record captures:
 - PDF fingerprint
 - adapter runtime name and version
 - business-card page dimensions in points
+
+For print-fidelity and QR approval expectations tied to the current open source template, see [template-authoring.md](/cardiff/cardiff/docs/template-authoring.md).
