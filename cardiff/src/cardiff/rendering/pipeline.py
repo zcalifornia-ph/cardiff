@@ -180,8 +180,19 @@ def _build_placeholder_values(
 
 
 def _render_template_source(template_source: str, values: dict[str, str]) -> str:
+    unknown = sorted(
+        {m.group(1) for m in PLACEHOLDER_PATTERN.finditer(template_source)}
+        - values.keys()
+    )
+    if unknown:
+        names = ", ".join(f"'{{{{ {name} }}}}'" for name in unknown)
+        raise RenderingError(
+            RenderFailureClass.TEMPLATE_PLACEHOLDER_UNKNOWN,
+            f"template contains unknown placeholders: {names}",
+        )
+
     def replace(match: re.Match[str]) -> str:
-        return values.get(match.group(1), "")
+        return values[match.group(1)]
 
     return PLACEHOLDER_PATTERN.sub(replace, template_source)
 
