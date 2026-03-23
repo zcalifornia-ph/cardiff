@@ -27,6 +27,7 @@ class BaseTeXAdapter:
 
     runtime_name = "base-tex-adapter"
     runtime_version = "0"
+    deterministic = False
 
     def compile(
         self,
@@ -45,6 +46,7 @@ class DeterministicTeXAdapter(BaseTeXAdapter):
 
     runtime_name = "deterministic-tex-adapter"
     runtime_version = "1"
+    deterministic = True
 
     def compile(
         self,

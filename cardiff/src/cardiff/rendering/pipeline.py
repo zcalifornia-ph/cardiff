@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
+import tempfile
 from pathlib import Path
 import re
 
 from cardiff.contract.models import RenderRequest
 
+from .directives import resolve_qr_directives, resolve_qr_directives_deterministic
 from .models import (
     NormalizedRenderEvidence,
     RenderFailureClass,
@@ -47,25 +50,44 @@ def render_request_to_pdf(
         placeholder_values = _build_placeholder_values(render_request, resolved_assets)
         template_source = resolved_template.entrypoint_path.read_text(encoding="utf-8")
         rendered_tex = _render_template_source(template_source, placeholder_values)
-        preview_lines = _build_preview_lines(render_request, resolved_assets)
-        compile_artifact = adapter.compile(
-            rendered_tex,
-            output_path,
-            page_size_pt=(
-                resolved_template.descriptor.page_width_pt,
-                resolved_template.descriptor.page_height_pt,
-            ),
-            preview_lines=preview_lines,
-            title=resolved_template.descriptor.display_name,
-        )
-        if (
-            not compile_artifact.output_path.exists()
-            or compile_artifact.output_path.stat().st_size == 0
-        ):
-            raise RenderingError(
-                RenderFailureClass.RENDER_OUTPUT_INVALID,
-                "adapter reported success but did not produce a non-empty PDF artifact",
+
+        include_qr = bool(render_request.template.options.get("include_qr", False))
+
+        with contextlib.ExitStack() as stack:
+            if adapter.deterministic:
+                rendered_tex = resolve_qr_directives_deterministic(
+                    rendered_tex, include_qr=include_qr,
+                )
+            else:
+                qr_tmp = Path(stack.enter_context(
+                    tempfile.TemporaryDirectory(prefix="cardiff-qr-")
+                ))
+                rendered_tex = resolve_qr_directives(
+                    rendered_tex,
+                    render_request.identity,
+                    include_qr=include_qr,
+                    work_dir=qr_tmp,
+                )
+
+            preview_lines = _build_preview_lines(render_request, resolved_assets)
+            compile_artifact = adapter.compile(
+                rendered_tex,
+                output_path,
+                page_size_pt=(
+                    resolved_template.descriptor.page_width_pt,
+                    resolved_template.descriptor.page_height_pt,
+                ),
+                preview_lines=preview_lines,
+                title=resolved_template.descriptor.display_name,
             )
+            if (
+                not compile_artifact.output_path.exists()
+                or compile_artifact.output_path.stat().st_size == 0
+            ):
+                raise RenderingError(
+                    RenderFailureClass.RENDER_OUTPUT_INVALID,
+                    "adapter reported success but did not produce a non-empty PDF artifact",
+                )
 
         evidence = NormalizedRenderEvidence(
             template_id=template_id,
@@ -121,7 +143,6 @@ def _build_placeholder_values(
         "pronouns": identity.pronouns or "",
         "address_block": r" \\ ".join(address_lines),
         "variant": str(options.get("variant", "default")),
-        "include_qr": "enabled" if bool(options.get("include_qr", False)) else "disabled",
         "accent_hex": str(options.get("accent_hex", "#000000")),
         "logo_path": logo_path.as_posix() if logo_path is not None else "",
     }
