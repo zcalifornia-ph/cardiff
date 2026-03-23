@@ -14,6 +14,8 @@ Contributions should stay tightly aligned with the approved roadmap instead of j
 - Read `README.md`, `REQUIREMENTS.md`, and the relevant docs under `cardiff/docs/` before starting implementation work.
 - If you change the request contract, update `cardiff/docs/validation-contract.md` and the relevant tests in `cardiff/tests/contract/`.
 - If you change template resolution, rendering behavior, or QR directive preprocessing, update `cardiff/docs/render-pipeline.md` and the relevant tests in `cardiff/tests/rendering/`, including `test_directives.py` when directive or vCard behavior changes.
+- If you change template placeholder names, placeholder mapping, or approved template source files, add or update rendering tests that prove unknown placeholders fail before PDF generation instead of degrading silently.
+- When a rendering test needs custom template source, use isolated temporary files instead of reusing fixed filenames inside the real approved template directory.
 - If you change CLI behavior, entrypoint wiring, status payloads, or exit-code semantics, update `cardiff/docs/cli-quickstart.md` and the relevant tests in `cardiff/tests/cli/`.
 - If you change the approved sample request, template manifest semantics, deterministic render behavior, or any fingerprint-bearing artifact, refresh `cardiff/tests/fixtures/approved-samples/business-card/reference-evidence.json` and call that out in your pull request.
 - Do not refresh reference evidence for path-only or line-ending-only checkout differences; the normalized evidence fingerprints are expected to stay stable across those environment details.
@@ -101,8 +103,14 @@ python -m pytest tests/rendering -q -p no:cacheprovider
 python -m pytest tests/cli -q -p no:cacheprovider
 ```
 
-The broad `python -m pytest tests -q -p no:cacheprovider` command can currently fail if temporary QR work directories are still present under `cardiff/tests/fixtures/approved-samples/business-card/`.
+The broad `python -m pytest tests -q -p no:cacheprovider` command can currently fail if temporary QR work directories or other stray temp directories are still present in the workspace.
 Clean those directories before relying on broad test collection.
+
+Expected current result:
+
+- `tests/contract`: `9 passed`
+- `tests/rendering`: `25 passed`
+- `tests/cli`: `14 passed`
 
 ## Review Standards
 

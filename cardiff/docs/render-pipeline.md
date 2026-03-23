@@ -20,9 +20,12 @@ Each template package must currently provide:
 1. Load and validate a JSON or YAML request through `cardiff.contract`.
 2. Resolve `template.id` through the manifest-driven template registry.
 3. Resolve required asset paths against the caller-provided approved asset roots.
-4. Materialize TeX by applying the canonical request data to the approved template.
-5. Compile through a TeX adapter.
-6. Return `RenderResult` plus normalized evidence fingerprints.
+4. Validate that every template placeholder maps to a supported render field.
+5. Materialize TeX by applying the canonical request data to the approved template.
+6. Compile through a TeX adapter.
+7. Return `RenderResult` plus normalized evidence fingerprints.
+
+If the template source references an unknown placeholder, rendering stops before compile with `RenderFailureClass.TEMPLATE_PLACEHOLDER_UNKNOWN`.
 
 ## Adapter Modes
 

@@ -23,6 +23,7 @@ python -m cardiff render tests/fixtures/requests/valid-request.yaml --approved-a
 Behavior:
 
 - The request is validated before any render work starts.
+- Unknown template placeholders fail before PDF generation starts and surface a render failure class in the JSON payload.
 - Parent directories for the output PDF are created automatically when needed.
 - The CLI reports the resolved source path, template ID, output path, and runtime metadata in its JSON status payload.
 - `--deterministic` forces the deterministic adapter even if `xelatex` is installed locally.
