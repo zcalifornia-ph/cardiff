@@ -168,25 +168,32 @@ Current commands:
    cd cardiff
    ```
 
-3. Install the package and test dependencies:
+3. Create and activate a virtual environment:
+
+   ```powershell
+   python -m venv .venv
+   source .venv/bin/activate
+   ```
+
+4. Install the package and test dependencies:
 
    ```powershell
    python -m pip install -e ".[dev]"
    ```
 
-4. Validate the approved sample request:
+5. Validate the approved sample request:
 
    ```powershell
    python -m cardiff validate tests/fixtures/requests/valid-request.yaml --approved-asset-root tests/fixtures/approved-assets
    ```
 
-5. Render the approved sample PDF with deterministic evidence comparison:
+6. Render the approved sample PDF with deterministic evidence comparison:
 
    ```powershell
    python -m cardiff render tests/fixtures/requests/valid-request.yaml --approved-asset-root tests/fixtures/approved-assets --output tests/fixtures/approved-samples/business-card/determinism-output.pdf --deterministic --reference-evidence tests/fixtures/approved-samples/business-card/reference-evidence.json
    ```
 
-6. Run the current acceptance suite:
+7. Run the current acceptance suite:
 
    ```powershell
    python -m pytest tests -q -p no:cacheprovider
