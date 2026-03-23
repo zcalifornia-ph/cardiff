@@ -4,6 +4,7 @@ Thanks for contributing to Cardiff.
 
 Cardiff is now in an early pre-alpha implementation stage.
 `UNIT-001` is complete, the first CLI operator flow is in place, and the checked-in repo now also includes QR-directive rendering work.
+The current repo also includes initial GitHub Actions validation and release workflows, though the broader `UNIT-005` runtime packaging and deployment scope is still open.
 Contributions should stay tightly aligned with the approved roadmap instead of jumping ahead with disconnected features.
 
 ## Before You Start
@@ -38,11 +39,11 @@ Strong contributions usually:
 ## Workflow
 
 1. Fork the repository.
-2. Create a short-lived branch from `rev`.
+2. Create a short-lived branch from the integration branch you intend to target (`main` or `rev`).
 3. Name the branch in kebab-case and start it with the relevant Conventional Commit type.
 4. Make the smallest cohesive change that solves the problem.
 5. Update docs and tests when applicable.
-6. Open a pull request targeting `rev` with clear context and verification details.
+6. Open a pull request targeting that same integration branch with clear context and verification details.
 7. Delete the branch after the pull request is merged.
 
 Example branch name:
@@ -55,7 +56,8 @@ Branch policy notes:
 
 - Use short-lived branches only.
 - Keep one branch focused on one issue or cohesive change.
-- Sync `rev` before creating a new branch.
+- Sync the integration branch you plan to target before creating a new branch.
+- The current GitHub Actions validation flow runs on pushes and pull requests for both `main` and `rev`.
 
 ## Commit Messages
 
@@ -91,6 +93,7 @@ Each pull request should include:
 Prefer small pull requests over large mixed changes.
 If your work changes public behavior, update `README.md` and `CHANGELOG.md`.
 If your work changes the canonical contract or approved scope, update `REQUIREMENTS.md` and the affected public docs as well.
+If your work changes packaging or release automation, keep `.github/workflows/release.yml`, the package metadata in `cardiff/pyproject.toml`, and the intended `v*` release tag consistent.
 
 ## Verification Notes
 
@@ -103,6 +106,8 @@ python -m pytest tests/rendering -q -p no:cacheprovider
 python -m pytest tests/cli -q -p no:cacheprovider
 ```
 
+These are the same suites enforced by `.github/workflows/ci.yml` and rerun by `.github/workflows/release.yml`.
+
 The broad `python -m pytest tests -q -p no:cacheprovider` command can currently fail if temporary QR work directories or other stray temp directories are still present in the workspace.
 Clean those directories before relying on broad test collection.
 
@@ -111,6 +116,10 @@ Expected current result:
 - `tests/contract`: `9 passed`
 - `tests/rendering`: `25 passed`
 - `tests/cli`: `14 passed`
+
+Release automation note:
+
+- pushed `v*` release tags are expected to match the package version in `cardiff/pyproject.toml` exactly, for example `v0.1.6` -> `0.1.6`
 
 ## Review Standards
 

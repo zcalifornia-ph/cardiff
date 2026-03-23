@@ -1,6 +1,28 @@
 # Changelog
 
-Status: pre-alpha; `UNIT-001` is complete and the repository currently contains QR-directive rendering, deterministic/Unicode rendering clarification work, normalized reference-evidence comparison, and fail-fast unknown-template-placeholder rejection.
+Status: pre-alpha; `UNIT-001` is complete and the repository currently contains QR-directive rendering, deterministic/Unicode rendering clarification work, normalized reference-evidence comparison, fail-fast unknown-template-placeholder rejection, and initial GitHub Actions validation/release automation.
+
+## v0.1.6
+
+### Added or Changed
+- Advanced the root public release markers from `v0.1.5` to `v0.1.6` in `README.md` and `REQUIREMENTS.md`.
+- Added `.github/workflows/ci.yml` so pushes and pull requests targeting `main` or `rev` now run the targeted contract, rendering, and CLI suites across Python `3.12` and `3.13`, with cleanup patterns that match Cardiff's actual transient test directories.
+- Added `.github/workflows/release.yml` so pushed `v*` tags now validate `cardiff/pyproject.toml` version metadata, rerun the targeted suites, build distributions, and publish only after those gates pass.
+- Updated `cardiff/pyproject.toml` so the distribution metadata now uses `cardiff-cli` and the in-tree package version is aligned to `0.1.6` while preserving the `cardiff` console entrypoint.
+- Updated `README.md`, `REQUIREMENTS.md`, and `CONTRIBUTING.md` so the public docs now reflect the current CI/release workflows, the `cardiff-cli` distribution name, and the fact that `main` and `rev` are both valid integration targets under the current automation.
+- Added `docs/version-0-1-6-docs.md` with the detailed release notes for this CI/release automation and metadata-alignment update.
+- Verified the targeted suite baseline for the current repo state: `tests/contract` passes (`9`), `tests/rendering` passes (`25`), and `tests/cli` passes (`14`).
+
+### For Deletion
+- `cardiff/tests/fixtures/approved-samples/business-card/.cardiff-qr/` generated QR work directory from non-deterministic rendering runs.
+- `cardiff/tests/fixtures/approved-samples/business-card/_directive-work/` generated QR directive test work directory.
+- `cardiff/tests/fixtures/approved-samples/business-card/cardiff-qr-*/` inaccessible temporary QR directories left behind by earlier runs.
+- `cardiff/tests/fixtures/tmp5jdz_7bl/` orphaned temporary test directory left behind by an earlier failed cleanup attempt.
+- `cardiff/tests/fixtures/tmpr9v8b8nh/` orphaned temporary test directory left behind by an earlier failed cleanup attempt.
+- `cardiff/pytest-cache-files-*/` temporary pytest cache directories that are currently permission-denied in this workspace.
+- `cardiff/tmpgremi45_/` orphaned temporary project-root directory left behind by an earlier failed cleanup attempt.
+- `cardiff/tmpn4v7ks5z/` orphaned temporary project-root directory left behind by an earlier failed cleanup attempt.
+- `tmphk9u2kf5/` orphaned temporary root directory.
 
 ## v0.1.5
 
