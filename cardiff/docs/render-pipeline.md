@@ -26,10 +26,10 @@ Each template package must currently provide:
 
 ## Adapter Modes
 
-- `DeterministicTeXAdapter`: local deterministic fallback used by tests and by environments that do not have `xelatex` installed.
-- `XeLaTeXAdapter`: subprocess-backed adapter for real compiler execution when `xelatex` is available.
+- `DeterministicTeXAdapter`: local deterministic fallback used by tests and by environments that do not have `xelatex` installed. It writes an ASCII-only preview PDF and now fails with `RenderFailureClass.TEX_COMPILE_FAILED` if preview lines or the template title contain non-ASCII text.
+- `XeLaTeXAdapter`: subprocess-backed adapter for real compiler execution when `xelatex` is available. Use this adapter for Unicode-safe local rendering.
 
-`render_request_to_pdf()` will pick `XeLaTeXAdapter` automatically when `xelatex` is on `PATH`; otherwise it falls back to `DeterministicTeXAdapter`.
+`render_request_to_pdf()` will pick `XeLaTeXAdapter` automatically when `xelatex` is on `PATH`; otherwise it falls back to `DeterministicTeXAdapter`. The fallback remains useful for deterministic ASCII-only review and smoke checks, but non-ASCII identity or title text requires `xelatex`.
 
 ## Sample Usage
 

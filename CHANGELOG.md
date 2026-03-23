@@ -1,8 +1,26 @@
 # Changelog
 
-Status: pre-alpha; `UNIT-001` is complete and the repository currently contains additional post-`v0.1.1` QR-directive and documentation-reconciliation work.
+Status: pre-alpha; `UNIT-001` is complete and the repository currently contains QR-directive rendering plus deterministic/Unicode rendering clarification work.
 
-## Unreleased
+## v0.1.3
+
+### Added or Changed
+- Reconciled the root release markers by normalizing the previous top `CHANGELOG.md` block into `v0.1.2` and advancing the public `README.md` version/docs references to `v0.1.3`.
+- Clarified in `README.md` that `xelatex` is recommended for Unicode-safe local rendering and that the deterministic fallback is only suitable for ASCII-only preview/title text.
+- Expanded `cardiff/tests/rendering/test_pipeline.py` coverage so deterministic mode fails clearly for non-ASCII `full_name`, `role`, `organization`, `address_lines`, and template-title inputs.
+- Updated `cardiff/docs/render-pipeline.md` to document the ASCII-only limit of `DeterministicTeXAdapter` and to direct Unicode-safe local rendering to `XeLaTeXAdapter`.
+- Refreshed `cardiff/tests/fixtures/approved-samples/business-card/qr-evidence-stability.pdf` in the approved sample set alongside the rendering test changes.
+- Verified the targeted suite baseline for the current repo state: `tests/contract` passes (`8`), `tests/rendering` passes (`21`), and `tests/cli` currently has one failing reference-comparison test (`11` passed, `1` failed) because `reference-evidence.json` fingerprints are stale.
+- Added `docs/version-0-1-3-docs.md` with the detailed release notes for this deterministic-rendering clarification update.
+
+### For Deletion
+- `cardiff/tests/fixtures/approved-samples/business-card/.cardiff-qr/` generated QR work directory from non-deterministic rendering runs.
+- `cardiff/tests/fixtures/approved-samples/business-card/_directive-work/` generated QR directive test work directory.
+- `cardiff/tests/fixtures/approved-samples/business-card/cardiff-qr-*/` inaccessible temporary QR directories left behind by earlier runs.
+- `cardiff/pytest-cache-files-*/` temporary pytest cache directories that are currently permission-denied in this workspace.
+- `tmphk9u2kf5/` orphaned temporary root directory.
+
+## v0.1.2
 
 ### Added or Changed
 - Reconciled the root public docs with the current repo state, including the checked-in QR directive/rendering additions and the latest verification caveats.
