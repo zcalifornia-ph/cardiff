@@ -28,8 +28,8 @@
   </p>
 
   <p align="center">
-    Version: <code>v0.1.6</code> public release line<br>
-    Status: pre-alpha; <code>UNIT-001</code> is complete and the current repo head now includes QR-directive rendering support, explicit Unicode-safe local rendering guidance, stable normalized-evidence comparison, fail-fast rejection of unknown template placeholders before PDF generation, and initial GitHub Actions validation/release workflows.
+    Version: <code>v0.1.7</code> public release line<br>
+    Status: pre-alpha; <code>UNIT-001</code> is complete and the current repo head now includes QR-directive rendering support, explicit Unicode-safe local rendering guidance, stable normalized-evidence comparison, fail-fast rejection of unknown template placeholders before PDF generation, initial GitHub Actions validation/release workflows, and normalized Python source attribution headers for the current tracked package/test surface.
     <br />
     <a href="REQUIREMENTS.md"><strong>Explore the docs »</strong></a>
     <br />
@@ -104,6 +104,7 @@ What is in place today:
 
 - a Python package scaffold with setuptools metadata in `cardiff/pyproject.toml` for the `cardiff-cli` distribution
 - a public package surface in `cardiff/src/cardiff/`
+- normalized Apache attribution and embedded license headers across the tracked Python source files currently maintained in-tree
 - a framework-agnostic contract kernel in `cardiff/src/cardiff/contract/`
 - a shared render pipeline in `cardiff/src/cardiff/rendering/`, including QR/vCard directive preprocessing in `directives.py`
 - manifest-driven template resolution for the approved `business-card` template package in `cardiff/src/cardiff/templates/business-card/`
@@ -284,6 +285,7 @@ cardiff/
     version-0-1-4-docs.md
     version-0-1-5-docs.md
     version-0-1-6-docs.md
+    version-0-1-7-docs.md
   learn/
     unit-001-bolt-001a-study-guide.md
   README.md
@@ -327,7 +329,7 @@ Start with these project artifacts:
 - `.github/workflows/ci.yml` for the current targeted validation matrix on pushes and pull requests
 - `.github/workflows/release.yml` for the current tag-gated release verification and publish flow
 - `learn/unit-001-bolt-001a-study-guide.md` for the guided walkthrough of the contract foundation
-- `docs/version-0-1-6-docs.md` for the latest checked-in versioned documentation-release notes beyond this README and changelog
+- `docs/version-0-1-7-docs.md` for the latest checked-in versioned documentation-release notes beyond this README and changelog
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

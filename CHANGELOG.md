@@ -1,6 +1,36 @@
 # Changelog
 
-Status: pre-alpha; `UNIT-001` is complete and the repository currently contains QR-directive rendering, deterministic/Unicode rendering clarification work, normalized reference-evidence comparison, fail-fast unknown-template-placeholder rejection, and initial GitHub Actions validation/release automation.
+Status: pre-alpha; `UNIT-001` is complete and the repository currently contains QR-directive rendering, deterministic/Unicode rendering clarification work, normalized reference-evidence comparison, fail-fast unknown-template-placeholder rejection, initial GitHub Actions validation/release automation, and normalized tracked-source attribution headers.
+
+## v0.1.7
+
+### Added or Changed
+- Advanced the root public release markers from `v0.1.6` to `v0.1.7` in `README.md` and `REQUIREMENTS.md`.
+- Updated `cardiff/pyproject.toml` so the package metadata and tag-gated release workflow remain aligned at `0.1.7`.
+- Normalized the required attribution/license header block across the tracked Python files that were still missing it, including `cardiff/src/cardiff/paths.py`, the rendering package modules, and the rendering test modules.
+- Updated `README.md` so the repo-level project summary, repository layout, and latest versioned-doc reference all call out the attribution-normalization release.
+- Updated `CONTRIBUTING.md` so future Python-source edits preserve the required attribution header and the release-tag example stays aligned to the current package version.
+- Added `docs/version-0-1-7-docs.md` with the detailed release notes for this attribution-normalization and release-doc alignment update.
+- Verified the targeted suite baseline for the current repo state: `tests/contract` passes (`9`), `tests/rendering` passes (`25`), and `tests/cli` passes (`14`).
+
+### For Deletion
+- `cardiff/tests/fixtures/approved-samples/business-card/.cardiff-qr/` generated QR work directory from non-deterministic rendering runs.
+- `cardiff/tests/fixtures/approved-samples/business-card/_directive-work/` generated QR directive test work directory.
+- `cardiff/tests/fixtures/approved-samples/business-card/cardiff-qr-uxq_h5e2/` inaccessible temporary QR directory left behind by an earlier run.
+- `cardiff/tests/fixtures/approved-samples/business-card/cardiff-qr-xymbgoy7/` inaccessible temporary QR directory left behind by an earlier run.
+- `cardiff/tests/fixtures/tmp5jdz_7bl/` orphaned temporary test directory left behind by an earlier failed cleanup attempt.
+- `cardiff/tests/fixtures/tmpr9v8b8nh/` orphaned temporary test directory left behind by an earlier failed cleanup attempt.
+- `cardiff/pytest-cache-files-6m2fab6s/` temporary pytest cache directory that is currently permission-denied in this workspace.
+- `cardiff/pytest-cache-files-73ljzvxn/` temporary pytest cache directory that is currently permission-denied in this workspace.
+- `cardiff/pytest-cache-files-a6saqzj0/` temporary pytest cache directory that is currently permission-denied in this workspace.
+- `cardiff/pytest-cache-files-cucgfg1_/` temporary pytest cache directory that is currently permission-denied in this workspace.
+- `cardiff/pytest-cache-files-itctf5rq/` temporary pytest cache directory that is currently permission-denied in this workspace.
+- `cardiff/pytest-cache-files-iusr931u/` temporary pytest cache directory that is currently permission-denied in this workspace.
+- `cardiff/pytest-cache-files-qyz2mto6/` temporary pytest cache directory that is currently permission-denied in this workspace.
+- `cardiff/pytest-cache-files-r82e4azx/` temporary pytest cache directory that is currently permission-denied in this workspace.
+- `cardiff/tmpgremi45_/` orphaned temporary project-root directory left behind by an earlier failed cleanup attempt.
+- `cardiff/tmpn4v7ks5z/` orphaned temporary project-root directory left behind by an earlier failed cleanup attempt.
+- `tmphk9u2kf5/` orphaned temporary root directory.
 
 ## v0.1.6
 

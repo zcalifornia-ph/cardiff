@@ -20,6 +20,7 @@ Contributions should stay tightly aligned with the approved roadmap instead of j
 - If you change CLI behavior, entrypoint wiring, status payloads, or exit-code semantics, update `cardiff/docs/cli-quickstart.md` and the relevant tests in `cardiff/tests/cli/`.
 - If you change the approved sample request, template manifest semantics, deterministic render behavior, or any fingerprint-bearing artifact, refresh `cardiff/tests/fixtures/approved-samples/business-card/reference-evidence.json` and call that out in your pull request.
 - Do not refresh reference evidence for path-only or line-ending-only checkout differences; the normalized evidence fingerprints are expected to stay stable across those environment details.
+- If you add or modify tracked Python source files, preserve the required attribution header and embedded Apache-2.0 license text so source attribution stays consistent across the maintained package/test surface.
 - Do not include generated Python cache files, bytecode, or editable-install metadata in a contribution.
 - Do not commit temporary QR work directories or generated directive scratch space from `cardiff/tests/fixtures/approved-samples/business-card/`.
 - Make sure your work follows `CODE_OF_CONDUCT.md` and `SECURITY.md`.
@@ -119,7 +120,7 @@ Expected current result:
 
 Release automation note:
 
-- pushed `v*` release tags are expected to match the package version in `cardiff/pyproject.toml` exactly, for example `v0.1.6` -> `0.1.6`
+- pushed `v*` release tags are expected to match the package version in `cardiff/pyproject.toml` exactly, for example `v0.1.7` -> `0.1.7`
 
 ## Review Standards
 

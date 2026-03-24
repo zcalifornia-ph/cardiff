@@ -1,6 +1,6 @@
 # Requirements
 
-Status: pre-alpha public requirements snapshot for `v0.1.6`.
+Status: pre-alpha public requirements snapshot for `v0.1.7`.
 
 ## Objective
 
@@ -20,6 +20,7 @@ The current public MVP includes:
 - fail-fast rejection of unknown template placeholders before PDF generation starts
 - initial GitHub Actions validation for pushes and pull requests plus tag-gated release verification before distribution publishing
 - package metadata aligned to the `cardiff-cli` distribution while preserving the `cardiff` console command
+- normalized Apache attribution/license headers across the tracked Python source files that make up the current package and rendering-test surface
 
 ## Acceptance Baseline
 
@@ -55,7 +56,7 @@ Expected result:
 - `.github/workflows/ci.yml`
 - `.github/workflows/release.yml`
 - `cardiff/pyproject.toml`
-- `docs/version-0-1-6-docs.md`
+- `docs/version-0-1-7-docs.md`
 - `learn/unit-001-bolt-001a-study-guide.md`
 
 ## Next Units
