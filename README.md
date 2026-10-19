@@ -302,8 +302,7 @@ python -m pytest tests/rendering -q -p no:cacheprovider
 python -m pytest tests/cli -q -p no:cacheprovider
 ```
 
-The checked-in verification baseline is 9 contract, 25 rendering, and 14 CLI tests passing.
-
+The checked-in verification baseline test counts are documented in [CONTRIBUTING.md](CONTRIBUTING.md#verification-notes).
 ### 7. Troubleshooting
 
 - **Python version is too old:** confirm Python is `3.12+`, then create the virtual environment with that interpreter and reinstall the package dependencies.

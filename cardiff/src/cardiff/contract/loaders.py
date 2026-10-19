@@ -255,9 +255,14 @@ def load_request_document(source: str | Path | io.TextIOBase, *, source_name: st
     if isinstance(source, Path):
         return _load_request_file(source)
 
-    candidate_path = Path(source)
-    if source_name is None and candidate_path.exists():
-        return _load_request_file(candidate_path)
+    if source_name is None and "\n" not in source and "\r" not in source:
+        try:
+            candidate_path = Path(source)
+            is_existing_path = candidate_path.exists()
+        except (OSError, ValueError):
+            is_existing_path = False
+        if is_existing_path:
+            return _load_request_file(candidate_path)
 
     inferred_name = source_name or "<memory>"
     return RawRequestDocument(

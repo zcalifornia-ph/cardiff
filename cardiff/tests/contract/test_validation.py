@@ -218,6 +218,7 @@
 from __future__ import annotations
 
 import io
+import json
 from pathlib import Path
 
 import pytest
@@ -501,8 +502,82 @@ def test_stream_and_raw_string_inputs_are_unchanged():
 
     from_stream = load_request_document(io.StringIO(text), source_name="stream.yaml")
     from_string = load_request_document(text, source_name="inline.yaml")
+    from_unnamed_string = load_request_document(text)
 
     assert from_stream.content == text
     assert from_string.content == text
+    assert from_unnamed_string.content == text
+    assert from_unnamed_string.source_name == "<memory>"
+    assert from_unnamed_string.source_format == "yaml"
     assert from_stream.decode_error is None
     assert from_string.decode_error is None
+    assert from_unnamed_string.decode_error is None
+
+
+def test_raw_string_without_source_name_loads_and_validates_while_string_path_loads_file():
+    request_path = REQUESTS_ROOT / "valid-request.yaml"
+    text = request_path.read_text(encoding="utf-8")
+
+    result = load_and_validate_request(text, approved_asset_roots=(APPROVED_ASSETS,))
+    from_path_string = load_request_document(str(request_path))
+    from_path_object = load_request_document(request_path)
+
+    assert result.outcome == ValidationOutcome.ACCEPTED
+    assert result.issues == ()
+    assert from_path_string.source_name == str(request_path)
+    assert from_path_string.source_format == "yaml"
+    assert from_path_string.content == from_path_object.content
+
+
+def test_long_single_line_json_string_without_source_name_survives_path_probe(monkeypatch):
+    long_single_line_json = json.dumps(
+        {
+            "identity": {
+                "full_name": "Ada Lovelace",
+                "role": "Analytical Engine Architect",
+                "organization": "Babbage Analytical Research Group " + ("X" * 240),
+                "email": "ada.lovelace@example.org",
+            },
+            "template": {"id": "business-card"},
+        },
+        separators=(",", ":"),
+    )
+    assert "\n" not in long_single_line_json
+    assert "/" not in long_single_line_json
+    assert len(long_single_line_json.encode("utf-8")) > 255
+
+    raw_document = load_request_document(long_single_line_json)
+    result = load_and_validate_request(long_single_line_json)
+
+    assert raw_document.source_name == "<memory>"
+    assert raw_document.source_format == "json"
+    assert raw_document.content == long_single_line_json
+    assert result.outcome == ValidationOutcome.ACCEPTED
+    assert result.issues == ()
+
+    def raise_name_too_long(self):
+        raise OSError(36, "File name too long")
+
+    monkeypatch.setattr(Path, "exists", raise_name_too_long)
+    probed_document = load_request_document(long_single_line_json)
+    probed_result = load_and_validate_request(long_single_line_json)
+
+    assert probed_document.source_name == "<memory>"
+    assert probed_document.content == long_single_line_json
+    assert probed_result.outcome == ValidationOutcome.ACCEPTED
+
+    nul_containing_text = '{"identity":{"full_name":"Ada\x00Lovelace"}}'
+    nul_document = load_request_document(nul_containing_text)
+    assert nul_document.source_name == "<memory>"
+    assert nul_document.content == nul_containing_text
+
+
+def test_real_io_error_reading_existing_request_file_is_not_swallowed(monkeypatch):
+    request_path = REQUESTS_ROOT / "valid-request.yaml"
+
+    def raise_permission_error(self):
+        raise PermissionError("Permission denied")
+
+    monkeypatch.setattr(Path, "read_bytes", raise_permission_error)
+    with pytest.raises(PermissionError, match="Permission denied"):
+        load_request_document(str(request_path))

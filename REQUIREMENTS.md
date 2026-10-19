@@ -42,10 +42,7 @@ python -m pytest tests/cli -q -p no:cacheprovider
 ```
 
 Expected result:
-
-- 9 contract tests pass
-- 25 rendering tests pass
-- 14 CLI tests pass
+The checked-in verification baseline test counts are documented in [CONTRIBUTING.md](CONTRIBUTING.md#verification-notes).
 
 ## Public Source Files
 
