@@ -222,6 +222,7 @@ from __future__ import annotations
 from contextlib import ExitStack
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import tempfile
@@ -338,24 +339,41 @@ def render_request_to_pdf(
                     rendered_tex = evidence_tex
 
             preview_lines = _build_preview_lines(render_request, resolved_assets)
-            compile_artifact = adapter.compile(
-                rendered_tex,
-                output,
-                page_size_pt=(
-                    resolved_template.descriptor.page_width_pt,
-                    resolved_template.descriptor.page_height_pt,
-                ),
-                preview_lines=preview_lines,
-                title=resolved_template.descriptor.display_name,
-            )
-        if (
-            not compile_artifact.output_path.exists()
-            or compile_artifact.output_path.stat().st_size == 0
-        ):
+            try:
+                compile_artifact = adapter.compile(
+                    rendered_tex,
+                    output,
+                    page_size_pt=(
+                        resolved_template.descriptor.page_width_pt,
+                        resolved_template.descriptor.page_height_pt,
+                    ),
+                    preview_lines=preview_lines,
+                    title=resolved_template.descriptor.display_name,
+                )
+            except OSError as error:
+                # Only errors raised for the output file itself are output
+                # failures; any other adapter OSError keeps propagating.
+                if not _oserror_names_path(error, output):
+                    raise
+                raise RenderingError(
+                    RenderFailureClass.RENDER_OUTPUT_INVALID,
+                    f"failed to write output PDF '{output.as_posix()}': {error}",
+                ) from error
+        try:
+            if (
+                not compile_artifact.output_path.is_file()
+                or compile_artifact.output_path.stat().st_size == 0
+            ):
+                raise RenderingError(
+                    RenderFailureClass.RENDER_OUTPUT_INVALID,
+                    "adapter reported success but did not produce a non-empty PDF artifact",
+                )
+            pdf_bytes = compile_artifact.output_path.read_bytes()
+        except OSError as error:
             raise RenderingError(
                 RenderFailureClass.RENDER_OUTPUT_INVALID,
-                "adapter reported success but did not produce a non-empty PDF artifact",
-            )
+                f"failed to read output PDF '{compile_artifact.output_path.as_posix()}': {error}",
+            ) from error
 
         # Keep evidence stable across equivalent checkouts and input transport details.
         evidence = NormalizedRenderEvidence(
@@ -367,9 +385,7 @@ def render_request_to_pdf(
                 _canonical_json_text(render_request.to_dict())
             ),
             tex_fingerprint=_sha256_text(evidence_tex),
-            pdf_fingerprint=_sha256_bytes(
-                compile_artifact.output_path.read_bytes()
-            ),
+            pdf_fingerprint=_sha256_bytes(pdf_bytes),
             runtime_name=compile_artifact.runtime_name,
             runtime_version=compile_artifact.runtime_version,
             page_width_pt=resolved_template.descriptor.page_width_pt,
@@ -500,3 +516,13 @@ def _canonical_json_text(payload: object) -> str:
 
 def _sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
+
+
+def _oserror_names_path(error: OSError, path: Path) -> bool:
+    target = os.path.normcase(os.path.abspath(path))
+    for name in (error.filename, error.filename2):
+        if isinstance(name, (str, bytes, os.PathLike)) and (
+            os.path.normcase(os.path.abspath(os.fsdecode(name))) == target
+        ):
+            return True
+    return False

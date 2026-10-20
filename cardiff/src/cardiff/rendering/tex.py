@@ -275,9 +275,15 @@ class DeterministicTeXAdapter(BaseTeXAdapter):
         title: str,
     ) -> TeXCompileArtifact:
         output = Path(output_path)
-        output.parent.mkdir(parents=True, exist_ok=True)
         pdf_bytes = _build_minimal_pdf(preview_lines, page_size_pt=page_size_pt, title=title)
-        output.write_bytes(pdf_bytes)
+        try:
+            output.parent.mkdir(parents=True, exist_ok=True)
+            output.write_bytes(pdf_bytes)
+        except OSError as error:
+            raise RenderingError(
+                RenderFailureClass.RENDER_OUTPUT_INVALID,
+                f"failed to write output PDF '{output.as_posix()}': {error}",
+            ) from error
         return TeXCompileArtifact(
             output_path=output,
             runtime_name=self.runtime_name,
@@ -312,7 +318,13 @@ class XeLaTeXAdapter(BaseTeXAdapter):
             )
 
         output = Path(output_path)
-        output.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            output.parent.mkdir(parents=True, exist_ok=True)
+        except OSError as error:
+            raise RenderingError(
+                RenderFailureClass.RENDER_OUTPUT_INVALID,
+                f"failed to prepare output directory '{output.parent.as_posix()}': {error}",
+            ) from error
 
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_root = Path(temp_dir)
@@ -350,7 +362,13 @@ class XeLaTeXAdapter(BaseTeXAdapter):
                     "xelatex completed without producing a PDF artifact",
                 )
 
-            shutil.copyfile(compiled_pdf, output)
+            try:
+                shutil.copyfile(compiled_pdf, output)
+            except OSError as error:
+                raise RenderingError(
+                    RenderFailureClass.RENDER_OUTPUT_INVALID,
+                    f"failed to write output PDF '{output.as_posix()}': {error}",
+                ) from error
             diagnostics = tuple(
                 line for line in (completed.stdout, completed.stderr) if line.strip()
             )

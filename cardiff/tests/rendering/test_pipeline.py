@@ -218,6 +218,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import errno
 from pathlib import Path
 import re
 import shutil
@@ -842,3 +843,178 @@ def test_non_deterministic_qr_render_cleans_up_qr_image_after_compile_failure(tm
     assert list(tmp_path.rglob("*-cardiff-qr.png")) == []
     assert list(tmp_path.iterdir()) == []
 
+
+class FailingOutputWriteAdapter(BaseTeXAdapter):
+    runtime_name = "failing-output-write-adapter"
+    runtime_version = "1"
+    deterministic = True
+
+    def compile(
+        self,
+        tex_source: str,
+        output_path: str | Path,
+        *,
+        page_size_pt: tuple[float, float],
+        preview_lines: tuple[str, ...],
+        title: str,
+    ) -> TeXCompileArtifact:
+        raise PermissionError(errno.EACCES, "simulated locked output file", str(output_path))
+
+
+class FailingAdapterOSError(BaseTeXAdapter):
+    runtime_name = "failing-adapter-oserror"
+    runtime_version = "1"
+    deterministic = True
+
+    def __init__(self, error: OSError) -> None:
+        self.error = error
+
+    def compile(
+        self,
+        tex_source: str,
+        output_path: str | Path,
+        *,
+        page_size_pt: tuple[float, float],
+        preview_lines: tuple[str, ...],
+        title: str,
+    ) -> TeXCompileArtifact:
+        raise self.error
+
+
+def test_render_to_existing_directory_returns_render_output_invalid_without_raising(tmp_path):
+    request = _load_request()
+    output_dir = tmp_path / "out.pdf"
+    output_dir.mkdir()
+
+    result = render_request_to_pdf(
+        request,
+        output_dir,
+        approved_asset_roots=(APPROVED_ASSETS,),
+        tex_adapter=DeterministicTeXAdapter(),
+    )
+
+    assert result.status == RenderStatus.FAILED
+    assert result.failure_class == RenderFailureClass.RENDER_OUTPUT_INVALID
+    assert result.output_path is None
+    assert any(output_dir.as_posix() in message for message in result.diagnostics)
+
+
+def test_adapter_output_write_oserror_returns_render_output_invalid(tmp_path):
+    request = _load_request()
+    output_path = tmp_path / "locked.pdf"
+
+    result = render_request_to_pdf(
+        request,
+        output_path,
+        approved_asset_roots=(APPROVED_ASSETS,),
+        tex_adapter=FailingOutputWriteAdapter(),
+    )
+
+    assert result.status == RenderStatus.FAILED
+    assert result.failure_class == RenderFailureClass.RENDER_OUTPUT_INVALID
+    assert result.output_path is None
+    assert any(output_path.as_posix() in message for message in result.diagnostics)
+    assert any("simulated locked output file" in message for message in result.diagnostics)
+
+
+def test_adapter_oserror_naming_output_as_rename_target_returns_render_output_invalid(tmp_path):
+    output_path = tmp_path / "card.pdf"
+    error = OSError(errno.EACCES, "simulated replace failure", str(tmp_path / "card.pdf.partial"))
+    error.filename2 = str(output_path)
+
+    result = render_request_to_pdf(
+        _load_request(),
+        output_path,
+        approved_asset_roots=(APPROVED_ASSETS,),
+        tex_adapter=FailingAdapterOSError(error),
+    )
+
+    assert result.status == RenderStatus.FAILED
+    assert result.failure_class == RenderFailureClass.RENDER_OUTPUT_INVALID
+    assert any(output_path.as_posix() in message for message in result.diagnostics)
+
+
+@pytest.mark.parametrize(
+    "error",
+    [
+        OSError(errno.ENOSPC, "simulated scratch space failure", "scratch/cardiff-render.tex"),
+        OSError(errno.ENOSPC, "simulated scratch space failure"),
+    ],
+    ids=["unrelated-path", "no-path"],
+)
+def test_adapter_oserror_unrelated_to_output_is_not_reported_as_render_output_invalid(
+    error, tmp_path
+):
+    with pytest.raises(OSError, match="simulated scratch space failure"):
+        render_request_to_pdf(
+            _load_request(),
+            tmp_path / "card.pdf",
+            approved_asset_roots=(APPROVED_ASSETS,),
+            tex_adapter=FailingAdapterOSError(error),
+        )
+
+
+
+def test_render_reports_render_output_invalid_when_output_parent_is_a_file(tmp_path):
+    blocker = tmp_path / "blocker"
+    blocker.write_text("not a directory", encoding="utf-8")
+    output_path = blocker / "card.pdf"
+
+    result = render_request_to_pdf(
+        _load_request(),
+        output_path,
+        approved_asset_roots=(APPROVED_ASSETS,),
+        tex_adapter=DeterministicTeXAdapter(),
+    )
+
+    assert result.status == RenderStatus.FAILED
+    assert result.failure_class == RenderFailureClass.RENDER_OUTPUT_INVALID
+    assert result.output_path is None
+    assert any(
+        "failed to prepare output directory" in message and blocker.as_posix() in message
+        for message in result.diagnostics
+    )
+
+
+@pytest.mark.skipif(shutil.which("xelatex") is None, reason="xelatex is not installed")
+def test_xelatex_adapter_reports_render_output_invalid_when_output_parent_is_a_file(tmp_path):
+    # The pipeline creates the output directory first, so the adapter's own
+    # guard is only reachable by calling the adapter directly.
+    blocker = tmp_path / "blocker"
+    blocker.write_text("not a directory", encoding="utf-8")
+
+    with pytest.raises(RenderingError) as raised:
+        XeLaTeXAdapter().compile(
+            r"\documentclass{article}\begin{document}x\end{document}",
+            blocker / "card.pdf",
+            page_size_pt=(252.0, 144.0),
+            preview_lines=(),
+            title="Cardiff",
+        )
+
+    assert raised.value.failure_class == RenderFailureClass.RENDER_OUTPUT_INVALID
+    assert any(
+        "failed to prepare output directory" in message and blocker.as_posix() in message
+        for message in raised.value.diagnostics
+    )
+
+
+@pytest.mark.skipif(shutil.which("xelatex") is None, reason="xelatex is not installed")
+def test_xelatex_render_to_existing_directory_returns_render_output_invalid(tmp_path):
+    output_dir = tmp_path / "out.pdf"
+    output_dir.mkdir()
+
+    result = render_request_to_pdf(
+        _load_request(),
+        output_dir,
+        approved_asset_roots=(APPROVED_ASSETS,),
+        tex_adapter=XeLaTeXAdapter(),
+    )
+
+    assert result.status == RenderStatus.FAILED
+    assert result.failure_class == RenderFailureClass.RENDER_OUTPUT_INVALID
+    assert result.output_path is None
+    assert any(
+        "failed to write output PDF" in message and output_dir.as_posix() in message
+        for message in result.diagnostics
+    )

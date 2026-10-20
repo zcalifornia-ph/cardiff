@@ -648,3 +648,30 @@ def test_compare_reference_evidence_reports_multiple_mismatches():
     fields = {m['field'] for m in result.mismatches}
     assert fields == {'a', 'b', 'c'}
 
+
+def test_render_command_reports_render_output_invalid_without_traceback_when_output_is_directory(tmp_path):
+    output_dir = tmp_path / 'out.pdf'
+    output_dir.mkdir()
+
+    completed = _run_cli_subprocess(
+        [
+            'render',
+            VALID_REQUEST.as_posix(),
+            '--approved-asset-root',
+            APPROVED_ASSETS.as_posix(),
+            '--output',
+            output_dir.as_posix(),
+            '--deterministic',
+        ]
+    )
+
+    assert completed.returncode == 3
+    assert 'Traceback' not in completed.stderr
+    payload = json.loads(completed.stdout)
+    assert payload['command'] == 'render'
+    assert payload['status'] == 'failed'
+    assert payload['failure_stage'] == 'render'
+    assert payload['failure_class'] == 'render_output_invalid'
+    assert payload['exit_code'] == 3
+    assert any(output_dir.as_posix() in msg for msg in payload['diagnostics'])
+
